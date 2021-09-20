@@ -67,15 +67,4 @@
   </actuator>
 </transmission>
 
-<transmission name="Rev138_tran">
-  <type>transmission_interface/SimpleTransmission</type>
-  <joint name="Rev138">
-    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-  </joint>
-  <actuator name="Rev138_actr">
-    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-    <mechanicalReduction>1</mechanicalReduction>
-  </actuator>
-</transmission>
-
 </robot>

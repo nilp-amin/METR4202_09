@@ -29,7 +29,3 @@ scara_simple_controller:
     type: effort_controllers/JointPositionController
     joint: Rev126
     pid: {p: 100.0, i: 0.01, d: 10.0}
-  Rev138_position_controller:
-    type: effort_controllers/JointPositionController
-    joint: Rev138
-    pid: {p: 100.0, i: 0.01, d: 10.0}

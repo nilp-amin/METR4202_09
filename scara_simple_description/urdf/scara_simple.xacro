@@ -655,27 +655,6 @@
   </collision>
 </link>
 
-<link name="coupler_1">
-  <inertial>
-    <origin rpy="0 0 0" xyz="-3.5099007034133933e-13 8.57746465046674e-14 -0.007680718754592808"/>
-    <mass value="0.01835432337643002"/>
-    <inertia ixx="1e-06" ixy="-0.0" ixz="0.0" iyy="1e-06" iyz="-0.0" izz="1e-06"/>
-  </inertial>
-  <visual>
-    <origin rpy="0 0 0" xyz="-0.02 0.0 -0.2815"/>
-    <geometry>
-      <mesh filename="package://scara_simple_description/meshes/coupler_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <collision>
-    <origin rpy="0 0 0" xyz="-0.02 0.0 -0.2815"/>
-    <geometry>
-      <mesh filename="package://scara_simple_description/meshes/coupler_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
 <link name="servo_2_1">
   <inertial>
     <origin rpy="0 0 0" xyz="-0.006262277970959033 0.013468907614335501 0.014941417260641021"/>
@@ -948,13 +927,6 @@
   <origin rpy="0 0 0" xyz="0.099912 -0.0045 0.027012"/>
   <parent link="m1_link_1"/>
   <child link="fp04_f6_2_1"/>
-</joint>
-
-<joint name="Rev138" type="continuous">
-  <origin rpy="0 0 0" xyz="0.0065 0.0135 -0.005"/>
-  <parent link="servo_2_1"/>
-  <child link="coupler_1"/>
-  <axis xyz="0.0 -0.0 -1.0"/>
 </joint>
 
 <joint name="Rigid139" type="fixed">
