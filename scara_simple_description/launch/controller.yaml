@@ -1,4 +1,4 @@
-scara_simple_controller:
+scara_simple:
   # Publish all joint states -----------------------------------
   joint_state_controller:
     type: joint_state_controller/JointStateController
@@ -20,12 +20,12 @@ scara_simple_controller:
   Rev110_position_controller:
     type: effort_controllers/JointPositionController
     joint: Rev110
-    pid: {p: 100.0, i: 0.01, d: 10.0}
+    pid: {p: 50, i: 5, d: 0.05}
   Rev123_position_controller:
     type: effort_controllers/JointPositionController
     joint: Rev123
-    pid: {p: 100.0, i: 0.01, d: 10.0}
+    pid: {p: 50, i: 0.5, d: 10.0}
   Rev126_position_controller:
     type: effort_controllers/JointPositionController
     joint: Rev126
-    pid: {p: 100.0, i: 0.01, d: 10.0}
+    pid: {p: 100.0, i: 5, d: 0.1}
