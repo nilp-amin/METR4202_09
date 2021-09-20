@@ -4,6 +4,15 @@
 <xacro:include filename="$(find scara_simple_description)/urdf/materials.xacro" />
 <xacro:include filename="$(find scara_simple_description)/urdf/scara_simple.trans" />
 <xacro:include filename="$(find scara_simple_description)/urdf/scara_simple.gazebo" />
+
+<gazebo>
+  <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <robotNamespace>scara_simple</robotNamespace>
+  </plugin>
+</gazebo>
+
+<link name="world"></link>
+
 <link name="base_link">
   <inertial>
     <origin rpy="0 0 0" xyz="0.04098055507239287 -0.0001598330063843479 0.02842913280091773"/>
@@ -40,27 +49,6 @@
   </visual>
   <collision>
     <origin rpy="0 0 0" xyz="0.0211 0.04 -0.05"/>
-    <geometry>
-      <mesh filename="package://scara_simple_description/meshes/base_spacers_1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<link name="base_spacers_1_1">
-  <inertial>
-    <origin rpy="0 0 0" xyz="-3.5291908284662554e-13 1.3877787807814457e-17 -0.0075000000000000275"/>
-    <mass value="0.0059187605593633225"/>
-    <inertia ixx="0.0" ixy="-0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
-  </inertial>
-  <visual>
-    <origin rpy="0 0 0" xyz="0.0211 0.04 -0.065"/>
-    <geometry>
-      <mesh filename="package://scara_simple_description/meshes/base_spacers_1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <collision>
-    <origin rpy="0 0 0" xyz="0.0211 0.04 -0.065"/>
     <geometry>
       <mesh filename="package://scara_simple_description/meshes/base_spacers_1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
@@ -174,9 +162,9 @@
 
 <link name="horn_v1_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="0.0023393936365042334 -1.7257245979451774e-15 -3.153578609360608e-07"/>
+    <origin rpy="0 0 0" xyz="0.00233939363651281 -7.528689043717618e-14 -3.1535797248571917e-07"/>
     <mass value="0.00024575529409632613"/>
-    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="-0.0" izz="0.0"/>
   </inertial>
   <visual>
     <origin rpy="0 0 0" xyz="-0.211512 0.0005 -0.177566"/>
@@ -342,7 +330,7 @@
 
 <link name="lower_servo_housing_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="-0.00611012393032237 -0.0038999999999974515 -0.028236386254426454"/>
+    <origin rpy="0 0 0" xyz="-0.0061101239303172905 -0.0039000000000329895 -0.028236386254481632"/>
     <mass value="0.07090622458440883"/>
     <inertia ixx="4.9e-05" ixy="-0.0" ixz="-1e-06" iyy="4.8e-05" iyz="0.0" izz="3e-06"/>
   </inertial>
@@ -363,7 +351,7 @@
 
 <link name="microsg9_1_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="-0.0060818449538244945 1.886076298287555e-09 -0.013486331593268674"/>
+    <origin rpy="0 0 0" xyz="-0.00608184495381614 1.8860040143118748e-09 -0.013486331593379752"/>
     <mass value="0.05498776027444273"/>
     <inertia ixx="3e-06" ixy="-0.0" ixz="-0.0" iyy="5e-06" iyz="-0.0" izz="4e-06"/>
   </inertial>
@@ -384,7 +372,7 @@
 
 <link name="side_connection_2_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="-0.08649983112672016 -0.11927214315767659 -0.2207797006356755"/>
+    <origin rpy="0 0 0" xyz="-0.08649983112671458 -0.11927214315770523 -0.22077970063572228"/>
     <mass value="0.57885885536208"/>
     <inertia ixx="0.000673" ixy="0.0" ixz="0.0" iyy="0.000697" iyz="-7.4e-05" izz="0.000108"/>
   </inertial>
@@ -405,7 +393,7 @@
 
 <link name="side_connection_1_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="-0.2144998311267156 -0.20055185684232946 -0.22077970063567523"/>
+    <origin rpy="0 0 0" xyz="-0.21449983112671003 -0.2005518568423581 -0.22077970063573873"/>
     <mass value="0.5788588553620798"/>
     <inertia ixx="0.000673" ixy="-0.0" ixz="0.0" iyy="0.000697" iyz="7.4e-05" izz="0.000108"/>
   </inertial>
@@ -426,7 +414,7 @@
 
 <link name="upper_servo_housing_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="0.006600449857635693 2.088498644858827e-15 -0.04335454786893664"/>
+    <origin rpy="0 0 0" xyz="0.006600449857643964 -7.900505336749797e-14 -0.04335454786903861"/>
     <mass value="0.07409792845105563"/>
     <inertia ixx="4.9e-05" ixy="0.0" ixz="1e-06" iyy="4.8e-05" iyz="0.0" izz="3e-06"/>
   </inertial>
@@ -657,7 +645,7 @@
 
 <link name="servo_4_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="0.023237890902312847 0.007968907614333241 -0.017058898097273956"/>
+    <origin rpy="0 0 0" xyz="0.023237890902313346 0.007968907614231729 -0.017058898097368824"/>
     <mass value="0.04244091097100989"/>
     <inertia ixx="7e-06" ixy="-0.0" ixz="0.0" iyy="1.2e-05" iyz="-0.0" izz="1e-05"/>
   </inertial>
@@ -762,9 +750,9 @@
 
 <link name="linear_motion_rail_2_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="1.6887327886072612e-07 -3.1423431565147375e-15 -3.1535788019843025e-07"/>
+    <origin rpy="0 0 0" xyz="1.6887328657677614e-07 -3.1990360881140045e-14 -3.153579381798277e-07"/>
     <mass value="0.028410050684943296"/>
-    <inertia ixx="3.9e-05" ixy="0.0" ixz="-0.0" iyy="0.0" iyz="0.0" izz="3.9e-05"/>
+    <inertia ixx="3.9e-05" ixy="0.0" ixz="-0.0" iyy="0.0" iyz="-0.0" izz="3.9e-05"/>
   </inertial>
   <visual>
     <origin rpy="0 0 0" xyz="-0.213912 0.0005 -0.150516"/>
@@ -783,9 +771,9 @@
 
 <link name="linear_motion_rail_1_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="1.688732756965905e-07 -2.920298551589706e-15 -3.153578830850101e-07"/>
+    <origin rpy="0 0 0" xyz="1.6887328049830508e-07 -4.303046634290819e-14 -3.153579382075833e-07"/>
     <mass value="0.028410050684943296"/>
-    <inertia ixx="3.9e-05" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="3.9e-05"/>
+    <inertia ixx="3.9e-05" ixy="0.0" ixz="0.0" iyy="0.0" iyz="-0.0" izz="3.9e-05"/>
   </inertial>
   <visual>
     <origin rpy="0 0 0" xyz="-0.213912 0.0005 -0.205116"/>
@@ -802,9 +790,265 @@
   </collision>
 </link>
 
+<link name="base_mount_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.041715650029567494 0.04 0.0020000000000000018"/>
+    <mass value="0.29835318208121786"/>
+    <inertia ixx="0.000256" ixy="0.0" ixz="0.0" iyy="0.000252" iyz="-0.0" izz="0.000507"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.0211 0.04 -0.065"/>
+    <geometry>
+      <mesh filename="package://scara_simple_description/meshes/base_mount_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.0211 0.04 -0.065"/>
+    <geometry>
+      <mesh filename="package://scara_simple_description/meshes/base_mount_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="world_link" type="fixed">
+	<parent link="world"/>
+	<child link="base_link"/>
+</joint>
+
 <joint name="Rigid1" type="fixed">
-  <origin rpy="0 0 0" xyz="-0.0211 -0.04 0.065"/>
+  <origin rpy="0 0 0" xyz="-0.0211 -0.04 0.05"/>
   <parent link="base_link"/>
   <child link="base_spacers_1_1"/>
 </joint>
 
+<joint name="Rigid17" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.13"/>
+  <parent link="prismatic_rod_1"/>
+  <child link="prismatic_top_1"/>
+</joint>
+
+<joint name="Rigid20" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.022534 0.022534 0.068854"/>
+  <parent link="prismatic_link_interface_1"/>
+  <child link="lead_screw_interface_1"/>
+</joint>
+
+<joint name="Rigid37" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.008284 0.013284 0.062604"/>
+  <parent link="prismatic_link_interface_1"/>
+  <child link="m1_link_1"/>
+</joint>
+
+<joint name="Slider38" type="prismatic">
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.045"/>
+  <parent link="prismatic_rod_1"/>
+  <child link="prismatic_link_interface_1"/>
+  <axis xyz="-0.0 0.0 1.0"/>
+  <limit effort="100" lower="0.0" upper="0.064" velocity="100"/>
+</joint>
+
+<joint name="Rigid61" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0106 0.0535 0.004"/>
+  <parent link="base_mount_1"/>
+  <child link="servo_1_1"/>
+</joint>
+
+<joint name="Rev74" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0083 0.0 -0.0085"/>
+  <parent link="microsg9_1_1"/>
+  <child link="horn_v1_1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit effort="100" lower="0.0" upper="1.570796" velocity="100"/>
+</joint>
+
+<joint name="Rigid92" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.034784 0.041784 0.005"/>
+  <parent link="prismatic_top_1"/>
+  <child link="prismatic_servo_standoffs_4_1"/>
+</joint>
+
+<joint name="Rigid93" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.058784 0.041784 0.005"/>
+  <parent link="prismatic_top_1"/>
+  <child link="prismatic_servo_standoffs_3_1"/>
+</joint>
+
+<joint name="Rigid94" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.058784 0.014784 0.005"/>
+  <parent link="prismatic_top_1"/>
+  <child link="prismatic_servo_standoffs_1_1"/>
+</joint>
+
+<joint name="Rigid95" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.034784 0.014784 0.005"/>
+  <parent link="prismatic_top_1"/>
+  <child link="prismatic_servo_standoffs_2_1"/>
+</joint>
+
+<joint name="Rigid97" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.02 0.04 0.05"/>
+  <parent link="base_link"/>
+  <child link="base_spacers_2_1"/>
+</joint>
+
+<joint name="Rigid99" type="fixed">
+  <origin rpy="0 0 0" xyz="0.06 0.04 0.05"/>
+  <parent link="base_link"/>
+  <child link="base_spacers_3_1"/>
+</joint>
+
+<joint name="Rigid101" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0589 -0.04 0.05"/>
+  <parent link="base_link"/>
+  <child link="base_spacers_4_1"/>
+</joint>
+
+<joint name="Rigid102" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 0.0039 -0.0135"/>
+  <parent link="upper_servo_housing_1"/>
+  <child link="lower_servo_housing_1"/>
+</joint>
+
+<joint name="Rigid103" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.0107 -0.0039 -0.02505"/>
+  <parent link="lower_servo_housing_1"/>
+  <child link="microsg9_1_1"/>
+</joint>
+
+<joint name="Slider106" type="prismatic">
+  <origin rpy="0 0 0" xyz="0.0865 0.159912 0.165115"/>
+  <parent link="linear_motion_rail_1_1"/>
+  <child link="side_connection_2_1"/>
+  <axis xyz="-0.0 1.0 0.0"/>
+  <limit effort="100" lower="0.0" upper="0.0" velocity="100"/>
+</joint>
+
+<joint name="Slider107" type="prismatic">
+  <origin rpy="0 0 0" xyz="0.2145 0.159912 0.165115"/>
+  <parent link="linear_motion_rail_1_1"/>
+  <child link="side_connection_1_1"/>
+  <axis xyz="-0.0 1.0 0.0"/>
+  <limit effort="100" lower="0.0" upper="0.0" velocity="100"/>
+</joint>
+
+<joint name="Rev110" type="continuous">
+  <origin rpy="0 0 0" xyz="0.036 0.008 -0.037"/>
+  <parent link="servo_4_1"/>
+  <child link="upper_servo_housing_1"/>
+  <axis xyz="0.0 0.0 -1.0"/>
+</joint>
+
+<joint name="Rigid112" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.028284 0.028284 0.0025"/>
+  <parent link="lead_screw_bottom_plate_1"/>
+  <child link="608_bearing_1"/>
+</joint>
+
+<joint name="Rigid118" type="fixed">
+  <origin rpy="0 0 0" xyz="0.028284 -0.028284 0.02"/>
+  <parent link="prismatic_bottom_1"/>
+  <child link="lead_screw_bottom_plate_1"/>
+</joint>
+
+<joint name="Rigid119" type="fixed">
+  <origin rpy="0 0 0" xyz="0.028284 -0.028284 0.005"/>
+  <parent link="prismatic_bottom_1"/>
+  <child link="prismatic_rod_1"/>
+</joint>
+
+<joint name="Rigid120" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.028284 -0.028284 0.005"/>
+  <parent link="prismatic_bottom_1"/>
+  <child link="prismatic_rod_3"/>
+</joint>
+
+<joint name="Rigid121" type="fixed">
+  <origin rpy="0 0 0" xyz="0.028284 0.028284 0.005"/>
+  <parent link="prismatic_bottom_1"/>
+  <child link="prismatic_rod_2"/>
+</joint>
+
+<joint name="Rigid122" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.028284 0.028284 0.005"/>
+  <parent link="prismatic_bottom_1"/>
+  <child link="prismatic_rod_4"/>
+</joint>
+
+<joint name="Rev123" type="continuous">
+  <origin rpy="0 0 0" xyz="0.0305 -0.0135 0.037"/>
+  <parent link="servo_1_1"/>
+  <child link="prismatic_bottom_1"/>
+  <axis xyz="0.0 0.0 1.0"/>
+</joint>
+
+<joint name="Rev126" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0065 0.0135 -0.005"/>
+  <parent link="servo_3_1"/>
+  <child link="fp04_f2_1_1"/>
+  <axis xyz="-0.0 0.0 -1.0"/>
+  <limit effort="100" lower="-1.570796" upper="1.570796" velocity="100"/>
+</joint>
+
+<joint name="Rigid130" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 0.027 0.0"/>
+  <parent link="servo_3_1"/>
+  <child link="fp04_f6_1_1"/>
+</joint>
+
+<joint name="Rigid131" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 0.0055 -0.024"/>
+  <parent link="fp04_f6_2_1"/>
+  <child link="servo_3_1"/>
+</joint>
+
+<joint name="Rigid133" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0055 0.0 0.008"/>
+  <parent link="fp04_f6_3_1"/>
+  <child link="servo_4_1"/>
+</joint>
+
+<joint name="Rigid134" type="fixed">
+  <origin rpy="0 0 0" xyz="0.026 -0.008 0.037"/>
+  <parent link="fp04_f2_1_1"/>
+  <child link="fp04_f6_3_1"/>
+</joint>
+
+<joint name="Rigid135" type="fixed">
+  <origin rpy="0 0 0" xyz="0.099912 -0.0045 0.027012"/>
+  <parent link="m1_link_1"/>
+  <child link="fp04_f6_2_1"/>
+</joint>
+
+<joint name="Rev138" type="continuous">
+  <origin rpy="0 0 0" xyz="0.0065 0.0135 -0.005"/>
+  <parent link="servo_2_1"/>
+  <child link="coupler_1"/>
+  <axis xyz="0.0 -0.0 -1.0"/>
+</joint>
+
+<joint name="Rigid139" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.0405"/>
+  <parent link="prismatic_servo_standoffs_2_1"/>
+  <child link="servo_2_1"/>
+</joint>
+
+<joint name="Rigid144" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 -0.0039 -0.0606"/>
+  <parent link="lower_servo_housing_1"/>
+  <child link="linear_motion_rail_2_1"/>
+</joint>
+
+<joint name="Rigid145" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 -0.0039 -0.006"/>
+  <parent link="lower_servo_housing_1"/>
+  <child link="linear_motion_rail_1_1"/>
+</joint>
+
+<joint name="Rigid146" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.015"/>
+  <parent link="base_spacers_1_1"/>
+  <child link="base_mount_1"/>
+</joint>
+
+</robot>
