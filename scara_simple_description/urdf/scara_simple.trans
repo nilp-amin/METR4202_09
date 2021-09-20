@@ -12,17 +12,6 @@
   </actuator>
 </transmission>
 
-<transmission name="Rev74_tran">
-  <type>transmission_interface/SimpleTransmission</type>
-  <joint name="Rev74">
-    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-  </joint>
-  <actuator name="Rev74_actr">
-    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-    <mechanicalReduction>1</mechanicalReduction>
-  </actuator>
-</transmission>
-
 <transmission name="Slider106_tran">
   <type>transmission_interface/SimpleTransmission</type>
   <joint name="Slider106">

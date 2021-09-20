@@ -4,15 +4,6 @@
 <xacro:include filename="$(find scara_simple_description)/urdf/materials.xacro" />
 <xacro:include filename="$(find scara_simple_description)/urdf/scara_simple.trans" />
 <xacro:include filename="$(find scara_simple_description)/urdf/scara_simple.gazebo" />
-
-<gazebo>
-  <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-    <robotNamespace>scara_simple</robotNamespace>
-  </plugin>
-</gazebo>
-
-<link name="world"></link>
-
 <link name="base_link">
   <inertial>
     <origin rpy="0 0 0" xyz="0.04098055507239287 -0.0001598330063843479 0.02842913280091773"/>
@@ -99,8 +90,8 @@
 
 <link name="m1_link_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="0.05199188121380099 0.014999999911798845 -0.000617726368097371"/>
-    <mass value="0.20309503106453125"/>
+    <origin rpy="0 0 0" xyz="0.05199188121380082 0.014999999911798838 -0.0006177263680973155"/>
+    <mass value="0.20309503106453114"/>
     <inertia ixx="0.000114" ixy="0.0" ixz="-4.6e-05" iyy="0.000312" iyz="0.0" izz="0.000354"/>
   </inertial>
   <visual>
@@ -156,27 +147,6 @@
     <origin rpy="0 0 0" xyz="0.0105 -0.0135 -0.069"/>
     <geometry>
       <mesh filename="package://scara_simple_description/meshes/servo_1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<link name="horn_v1_1">
-  <inertial>
-    <origin rpy="0 0 0" xyz="0.00233939363651281 -7.528689043717618e-14 -3.1535797248571917e-07"/>
-    <mass value="0.00024575529409632613"/>
-    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="-0.0" izz="0.0"/>
-  </inertial>
-  <visual>
-    <origin rpy="0 0 0" xyz="-0.211512 0.0005 -0.177566"/>
-    <geometry>
-      <mesh filename="package://scara_simple_description/meshes/horn_v1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <collision>
-    <origin rpy="0 0 0" xyz="-0.211512 0.0005 -0.177566"/>
-    <geometry>
-      <mesh filename="package://scara_simple_description/meshes/horn_v1_1.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -349,32 +319,11 @@
   </collision>
 </link>
 
-<link name="microsg9_1_1">
-  <inertial>
-    <origin rpy="0 0 0" xyz="-0.00608184495381614 1.8860040143118748e-09 -0.013486331593379752"/>
-    <mass value="0.05498776027444273"/>
-    <inertia ixx="3e-06" ixy="-0.0" ixz="-0.0" iyy="5e-06" iyz="-0.0" izz="4e-06"/>
-  </inertial>
-  <visual>
-    <origin rpy="0 0 0" xyz="-0.203212 0.0005 -0.186066"/>
-    <geometry>
-      <mesh filename="package://scara_simple_description/meshes/microsg9_1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <collision>
-    <origin rpy="0 0 0" xyz="-0.203212 0.0005 -0.186066"/>
-    <geometry>
-      <mesh filename="package://scara_simple_description/meshes/microsg9_1_1.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
 <link name="side_connection_2_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="-0.08649983112671458 -0.11927214315770523 -0.22077970063572228"/>
+    <origin rpy="0 0 0" xyz="-0.08649983112668386 -0.11927214315770521 -0.22077970063577915"/>
     <mass value="0.57885885536208"/>
-    <inertia ixx="0.000673" ixy="0.0" ixz="0.0" iyy="0.000697" iyz="-7.4e-05" izz="0.000108"/>
+    <inertia ixx="0.000673" ixy="-0.0" ixz="0.0" iyy="0.000697" iyz="-7.4e-05" izz="0.000108"/>
   </inertial>
   <visual>
     <origin rpy="0 0 0" xyz="-0.300412 -0.159412 -0.370231"/>
@@ -393,9 +342,9 @@
 
 <link name="side_connection_1_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="-0.21449983112671003 -0.2005518568423581 -0.22077970063573873"/>
+    <origin rpy="0 0 0" xyz="-0.21449983112667906 -0.20055185684235816 -0.2207797006357956"/>
     <mass value="0.5788588553620798"/>
-    <inertia ixx="0.000673" ixy="-0.0" ixz="0.0" iyy="0.000697" iyz="7.4e-05" izz="0.000108"/>
+    <inertia ixx="0.000673" ixy="-0.0" ixz="-0.0" iyy="0.000697" iyz="7.4e-05" izz="0.000108"/>
   </inertial>
   <visual>
     <origin rpy="0 0 0" xyz="-0.428412 -0.159412 -0.370231"/>
@@ -708,8 +657,8 @@
 
 <link name="coupler_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="-3.5099007034133933e-13 8.577654583935049e-14 -0.0076807187545927524"/>
-    <mass value="0.018354323376430018"/>
+    <origin rpy="0 0 0" xyz="-3.5099007034133933e-13 8.57746465046674e-14 -0.007680718754592808"/>
+    <mass value="0.01835432337643002"/>
     <inertia ixx="1e-06" ixy="-0.0" ixz="0.0" iyy="1e-06" iyz="-0.0" izz="1e-06"/>
   </inertial>
   <visual>
@@ -771,7 +720,7 @@
 
 <link name="linear_motion_rail_1_1">
   <inertial>
-    <origin rpy="0 0 0" xyz="1.6887328049830508e-07 -4.303046634290819e-14 -3.153579382075833e-07"/>
+    <origin rpy="0 0 0" xyz="1.6887328049830508e-07 -4.303046634290819e-14 -3.153579381798277e-07"/>
     <mass value="0.028410050684943296"/>
     <inertia ixx="3.9e-05" ixy="0.0" ixz="0.0" iyy="0.0" iyz="-0.0" izz="3.9e-05"/>
   </inertial>
@@ -811,11 +760,6 @@
   </collision>
 </link>
 
-<joint name="world_link" type="fixed">
-	<parent link="world"/>
-	<child link="base_link"/>
-</joint>
-
 <joint name="Rigid1" type="fixed">
   <origin rpy="0 0 0" xyz="-0.0211 -0.04 0.05"/>
   <parent link="base_link"/>
@@ -852,14 +796,6 @@
   <origin rpy="0 0 0" xyz="0.0106 0.0535 0.004"/>
   <parent link="base_mount_1"/>
   <child link="servo_1_1"/>
-</joint>
-
-<joint name="Rev74" type="revolute">
-  <origin rpy="0 0 0" xyz="0.0083 0.0 -0.0085"/>
-  <parent link="microsg9_1_1"/>
-  <child link="horn_v1_1"/>
-  <axis xyz="1.0 0.0 0.0"/>
-  <limit effort="100" lower="0.0" upper="1.570796" velocity="100"/>
 </joint>
 
 <joint name="Rigid92" type="fixed">
@@ -908,12 +844,6 @@
   <origin rpy="0 0 0" xyz="0.0 0.0039 -0.0135"/>
   <parent link="upper_servo_housing_1"/>
   <child link="lower_servo_housing_1"/>
-</joint>
-
-<joint name="Rigid103" type="fixed">
-  <origin rpy="0 0 0" xyz="-0.0107 -0.0039 -0.02505"/>
-  <parent link="lower_servo_housing_1"/>
-  <child link="microsg9_1_1"/>
 </joint>
 
 <joint name="Slider106" type="prismatic">
