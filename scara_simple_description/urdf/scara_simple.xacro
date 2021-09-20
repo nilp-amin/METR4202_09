@@ -7,7 +7,7 @@
 
 <gazebo>
 	<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-		<robotNamespace>scara_simple></robotNamespace>
+		<robotNamespace>scara_simple</robotNamespace>
 	</plugin>
 </gazebo>
 
