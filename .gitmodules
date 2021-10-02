@@ -1,0 +1,9 @@
+[submodule "fiducials"]
+	path = fiducials
+	url = git@github.com:UbiquityRobotics/fiducials.git
+[submodule "ximea_ros_cam"]
+	path = ximea_ros_cam
+	url = git@github.com:wavelab/ximea_ros_cam.git
+[submodule "dynamixel_interface"]
+	path = dynamixel_interface
+	url = git@github.com:csiro-robotics/dynamixel_interface.git
