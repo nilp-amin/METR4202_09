@@ -11,11 +11,8 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float32MultiArray
 
-
 import modern_robotics as mr
 import numpy as np
-
-
 
 class RobotTrajectory():
     def __init__(self):
@@ -29,14 +26,25 @@ class RobotTrajectory():
         
         self.ready = False
         self.current_joint_pos = []
+        self.to_move_pos = []
 
+    # Setting an empty array as the current joint
+    # position, array given by the servos
     def callback(self, data):
         self.current_joint_pos = data.position
         self.rate.sleep()
 
+    # Checking if the joint angles are
+    # valid to be acted upon
     def boolcall(self, data):
         self.ready = data.data
         self.rate.sleep()
 
-    def callback_angles(self, data):
+    # Setting an empty array as the array given by the
+    # /scara_angles topic.
+    # The method requires validation from /scara_move topic
+    def callback_angle(self, data):
         if self.ready:
+            self.to_move_pos = data.data
+
+        self.rate.sleep()
