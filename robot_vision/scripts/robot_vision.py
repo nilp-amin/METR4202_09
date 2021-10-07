@@ -22,7 +22,7 @@ class RobotVision():
         rospy.init_node("scara_cv", anonymous=True)
         self.block_transform_pub = rospy.Publisher("block_transform", FiducialTransform, queue_size=10)
         self.block_ready_pub = rospy.Publisher("block_ready", String, queue_size=10)
-        self.fid_transform_sub = rospy.Subscriber("/fiducial_transforms", FiducialTransform, self.callback)
+        self.fid_transform_sub = rospy.Subscriber("/fiducial_transforms", FiducialTransform, self.fiducial_callback)
         self.scara_home_sub = rospy.Subscriber("/scara_home", Bool, self.ready_callback)
         self.listner = tf.TransformListener()
         self.rate = rospy.Rate(1)
@@ -45,17 +45,22 @@ class RobotVision():
         self.robot_ready = data.data
         pass
 
-    def callback(self, data):
+    def fiducial_callback(self, data):
         # rospy.loginfo(data.transforms) # data.transforms -> list()
         try:
-            if (len(data.transforms)) and self.robot_ready:
+            if len(data.transforms) and self.robot_ready:
                 (trans, rot)  = self.listner.lookupTransform("/0", 
                         f"/fiducial_{data.transforms[0].fiducial_id}", rospy.Time(0))
                 # Check if a block is still moving
                 if not is_moving(trans):
-                    (fid_id, trans, rot) = self.find_block_transform(data)
-                    self.update_tf_msg(fid_id, trans, rot)
+                    (fid_id, Tbase_block) = self.find_block_transform(data)
+                    if fid_id == None or Tbase_block == None:
+                        # All blocks found were out of reach
+                        return
+                        pass
+                    self.update_tf_msg(fid_id, Tbase_block)
                     self.pub.publish(self.tf_msg)
+                    self.tf_msg = FiducialTransform()
                     pass
                 
                 rospy.loginfo(data.transforms[0].fiducial_id)
@@ -74,6 +79,19 @@ class RobotVision():
     def run(self):
         rospy.sleep(3)
         rospy.spin()
+        pass
+
+    def update_tf_msg(fid_id:int, transform:np.array):
+        self.tf_msg.fiducial_id = fid_id
+        (rot, p) = mr.TransToRp(transfrom)
+        self.tf_msg.transform.translation.x = p[0]
+        self.tf_msg.transfrom.translation.y = p[1]
+        self.tf_msg.transfrom.translation.z = p[2]
+        skew_omega = mr.MatrixLog3(rot)
+        rotation_vec = mr.so3ToVec(skew_omega)
+        self.tf_msg.transform.rotation.x = rotation_vec[0]
+        self.tf_msg.transfrom.rotation.y = rotation_vec[1]
+        self.tf_msg.transfrom.rotation.z = rotation_vec[2]
         pass
 
     def marker_distance(trans: list)->float:
@@ -97,27 +115,6 @@ class RobotVision():
         return result
         pass
 
-    def find_block_transform(self, data)->tuple:
-        fiducials = {}
-        max_dist_id = None 
-        max_dist = 0
-        # TODO: Will change this algo to be less random when Tbase_cam is defined
-            # It will check for the position of the block on the robot side of the rotating plate 
-            # And return transforms for it if found
-        for tf in data.transforms:
-            fid_id = tf.fiducial_id
-            (trans, rot)  = self.listner.lookupTransform("/0", 
-                    f"/fiducial_{fid_id}", rospy.Time(0))
-            curr_dist = marker_distance(trans)
-            if curr_dist > max_dist:
-                max_dist = curr_dist
-                max_dist_id = fid_id
-            pass
-        (trans, rot)  = self.listner.lookupTransform("/0", 
-                f"/fiducial_{max_dist_id}", rospy.Time(0))
-        return (max_dist_id, trans, rot)
-        pass
-
     def find_block_transform(self, data)->tuples:
         fiducials = {}
         max_dist_id = None
@@ -136,7 +133,13 @@ class RobotVision():
                                     [0, 0, 0, 1]
                                   ])
             Tbase_block = self.Tbase_cam @ Tcam_block
-            curr_dist = marker_distance(trans)
+            block_posx = Tbase_block[0][-1]
+            block_posy = Tbase_block[1][-1]
+            # The height is always constant and does not affect choice of block
+            curr_dist = marker_distance([block_posx, block_posy, 0]])
+            if curr_dist < self.SCARA_ARM_RADIUS:
+                return (curr_dist, Tbase_block)
+        return (None, None)
         pass
 
     def rotation_matrix(self, rotation)->np.array:
