@@ -92,7 +92,7 @@ class RobotTrajectory():
         rate.sleep(3)
         rospy.spin()
 
-    if __name__ == '__main__':
+if __name__ == '__main__':
         try:
             rt = RobotTrajectory()
             rt.run()
