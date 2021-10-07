@@ -7,7 +7,7 @@ from geometry_msgs.msg import Transform
 from tf2_msgs.msg import TFMessage
 from std_msgs.msg import String
 from std_msgs.msg import Bool
-from fiducial_msgs.msg import FiducialTransform
+from fiducial_msgs.msg import FiducialTransform, FiducialTransformArray
 
 import modern_robotics as mr
 import numpy as np
@@ -21,11 +21,11 @@ class RobotVision():
     def __init__(self):
         rospy.init_node("scara_cv", anonymous=True)
         self.block_transform_pub = rospy.Publisher("block_transform", FiducialTransform, queue_size=10)
-        self.block_ready_pub = rospy.Publisher("block_ready", String, queue_size=10)
-        self.fid_transform_sub = rospy.Subscriber("/fiducial_transforms", FiducialTransform, self.fiducial_callback)
-        self.scara_home_sub = rospy.Subscriber("/scara_home", Bool, self.ready_callback)
+        self.block_ready_pub = rospy.Publisher("block_ready", Bool, queue_size=10)
+        self.fid_transform_sub = rospy.Subscriber("/fiducial_transforms", FiducialTransformArray, self.fiducial_callback, queue_size=1)
+        self.scara_home_sub = rospy.Subscriber("/scara_home", Bool, self.ready_callback, queue_size=1)
         self.listner = tf.TransformListener()
-        self.rate = rospy.Rate(1)
+        self.rate = rospy.Rate(0.1)
 
         self.ready_msg = String() # Used to tell robot_kinematics that transform frame is a valid pickup location 
         self.tf_msg = FiducialTransform() # Used to send the transform frame of block
@@ -38,7 +38,8 @@ class RobotVision():
                                   ])
         self.old_distance = 0
         self.motion_stopped = False
-        self.robot_ready = False 
+        self.robot_ready = True 
+        self.SCARA_ARM_RADIUS = 0.16
         pass
 
     def ready_callback(self, data):
@@ -46,28 +47,44 @@ class RobotVision():
         pass
 
     def fiducial_callback(self, data):
-        # rospy.loginfo(data.transforms) # data.transforms -> list()
+        rospy.loginfo(data.transforms)
         try:
+            """
+            if len(data.transforms):
+                rospy.loginfo(data.transforms[0].fiducial_id)
+                x = data.transforms[0].transform.translation.x
+                y = data.transforms[0].transform.translation.y
+                z = data.transforms[0].transform.translation.z
+                dist = [x, y, z]
+                rospy.loginfo(self.marker_distance(dist))
+            """
             if len(data.transforms) and self.robot_ready:
                 (trans, rot)  = self.listner.lookupTransform("/0", 
                         f"/fiducial_{data.transforms[0].fiducial_id}", rospy.Time(0))
                 # Check if a block is still moving
-                if not is_moving(trans):
+                if not self.is_moving(trans):
                     (fid_id, Tbase_block) = self.find_block_transform(data)
-                    if fid_id == None or Tbase_block == None:
-                        # All blocks found were out of reach
+                    if fid_id is None or Tbase_block is None:
+                        rospy.loginfo("All blocks found were out of reach")
                         return
                         pass
                     self.update_tf_msg(fid_id, Tbase_block)
-                    self.pub.publish(self.tf_msg)
+                    self.block_transform_pub.publish(self.tf_msg)
                     self.tf_msg = FiducialTransform()
+
+                    # Let scara_kinematics know that the transformations published are valid
+                    bool_msg = Bool()
+                    bool_msg.data = True
+                    self.block_ready_pub.publish(bool_msg)
+                    rospy.sleep(2)
+                    bool_msg.data = False
+                    self.block_ready_pub.publish(bool_msg)
                     pass
-                
-                rospy.loginfo(data.transforms[0].fiducial_id)
-                rospy.loginfo(dist)
                 pass
             else:
-                pass
+                bool_msg = Bool()
+                bool_msg.data = False
+                self.block_ready_pub.publish(bool_msg)
         except tf.LookupException as LE:
             rospy.loginfo(LE)
             pass
@@ -81,20 +98,20 @@ class RobotVision():
         rospy.spin()
         pass
 
-    def update_tf_msg(fid_id:int, transform:np.array):
+    def update_tf_msg(self, fid_id:int, transform:np.array):
         self.tf_msg.fiducial_id = fid_id
-        (rot, p) = mr.TransToRp(transfrom)
+        (rot, p) = mr.TransToRp(transform)
         self.tf_msg.transform.translation.x = p[0]
-        self.tf_msg.transfrom.translation.y = p[1]
-        self.tf_msg.transfrom.translation.z = p[2]
+        self.tf_msg.transform.translation.y = p[1]
+        self.tf_msg.transform.translation.z = p[2]
         skew_omega = mr.MatrixLog3(rot)
         rotation_vec = mr.so3ToVec(skew_omega)
         self.tf_msg.transform.rotation.x = rotation_vec[0]
-        self.tf_msg.transfrom.rotation.y = rotation_vec[1]
-        self.tf_msg.transfrom.rotation.z = rotation_vec[2]
+        self.tf_msg.transform.rotation.y = rotation_vec[1]
+        self.tf_msg.transform.rotation.z = rotation_vec[2]
         pass
 
-    def marker_distance(trans: list)->float:
+    def marker_distance(self, trans: list)->float:
         pos = np.array([trans[0], trans[1], trans[2]])
         return np.linalg.norm(pos)
         pass
@@ -115,13 +132,13 @@ class RobotVision():
         return result
         pass
 
-    def find_block_transform(self, data)->tuples:
+    def find_block_transform(self, data)->tuple:
         fiducials = {}
         max_dist_id = None
         max_dist = 0
         for tf in data.transforms:
             fid_id = tf.fiducial_id
-            (trans, rot) = self.listner.looupTransform("/0", f"/fiducial_{fid_id}", rospy.Time(0))
+            (trans, rot) = self.listner.lookupTransform("/0", f"/fiducial_{fid_id}", rospy.Time(0))
             Rcam_block = self.rotation_matrix(rot)
             Pcam_block = np.array([
                                     [trans[0]],
@@ -136,7 +153,7 @@ class RobotVision():
             block_posx = Tbase_block[0][-1]
             block_posy = Tbase_block[1][-1]
             # The height is always constant and does not affect choice of block
-            curr_dist = marker_distance([block_posx, block_posy, 0]])
+            curr_dist = self.marker_distance([block_posx, block_posy, 0])
             if curr_dist < self.SCARA_ARM_RADIUS:
                 return (curr_dist, Tbase_block)
         return (None, None)
