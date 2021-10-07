@@ -26,7 +26,6 @@ class ComputeIk():
         #TODO: REMOVE THIS
         self.pub_test_blocktransform = rospy.Publisher("/block_transform", FiducialTransform, queue_size=10)
 
-
         self.listener = tf.TransformListener()
         self.rate = rospy.Rate(1)
 
@@ -35,18 +34,15 @@ class ComputeIk():
         self.l1 = 20
         self.l2 = 20
 
-        
-
-
         #TODO: CHANGE BLOCK ID OPTIONS TO ACTUAL IDS
         self.block_id1 = 1
         self.block_id2 = 2
         self.block_id3 = 3
         self.block_id4 = 4
         
-
         self.robot_ready = False 
 
+    #TODO: REMOVE THIS
     def publish_test_values(self):
         T = Transform()
         T.translation.x = 0
@@ -56,8 +52,6 @@ class ComputeIk():
         T.rotation.y = 34
         T.rotation.z = 43
         T.rotation.w = 2
-        
-        #TODO: REMOVE THIS
         ft = FiducialTransform()
         ft.transform = T
         self.pub_test_blocktransform.publish(ft)
@@ -78,12 +72,6 @@ class ComputeIk():
 
     #where t and r are msg objects
     def compute_ik(self, t, r):
-        
-        #rostopic echo <topic>
-        #rostopic list
-        #rosrun package
-        #roscore
-
         # Initialization
         p_x = t.x
         p_y = t.y
@@ -118,7 +106,6 @@ class ComputeIk():
             p = ft.transform.translation
             q = ft.transform.rotation
             block_id = ft.fiducial_id
-            #TODO: Implement Placement of block angles
             
             pickup_angles = self.compute_ik(p, q)
             placement_angles = self.find_placement_angles(block_id)
