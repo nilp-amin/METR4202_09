@@ -44,40 +44,78 @@ class RobotTrajectory():
             bool_msg = Bool()
             bool_msg.data = False
             scara_home_pub.publish(bool_msg)
-
+            
+            # gets the data from the /scara_angles topic
+            # uses the first three values in the list of six
+            # give each value respective joint names
+            # publish the data straight to desired_joint_state
+            # move the arms into desired positions and when done
+            # wait
             joint_msg = JointState()
             joint_msg.name = ["joint_1", "joint_3", "joint_4"]
             joint_msg.position = [data.data[0], data.data[1], data.data[2]]
             self.desired_joint_state_pub.publish(joint_msg)
             while not self.at_desired_pos([data.data[0], 0, data.data[1], data.data[2]]):
                 pass
+
+            # set a value for the prismatic joint
+            # give the value a name "joint_2"
+            # publish the prismatic joint value
+            # move the prismatic joint down to pick up the box
             joint_msg.name = ["joint_2"]
             joint_msg.position = [3]
             self.desired_joint_state_pub.publish(joint_msg)
             while not self.at_desired_pos([data.data[0], joint_msg.position[0], data.data[1], data.data[2]]):
                 pass
-            #logic to grab the block refer to gpiozero library
+
+            # publish the values to grab onto the box
+            # TODO: logic to grab the block refer to gpiozero library
+
+            # publish the prismatic joint value
+            # so that the prismatic joint moves back up
             joint_msg.name = ["joint_2"]
             joint_msg.position = [-3]
             self.desired_joint_state_pub.publish(joint_msg)
             while not self.at_desired_pos([data.data[0], joint_msg.position[0], data.data[1], data.data[2]]):
                 pass
+
+            # uses the second three values of the data from /scara_angles
+            # moves the arms so that the arms are on top of the correct zone
+            # publishes the values to move the arm
             joint_msg.name = ["joint_1", "joint_3", "joint_4"]
             joint_msg.position = [data.data[3], data.data[4], data.data[5]]
             self.desired_joint_state_pub.publish(joint_msg)
             while not self.at_desired_pos([data.data[0], 0, data.data[1], data.data[2]]):
                 pass
-            #logic to release the block refer to gpiozero library
-            #lower the arm if wanted come back to it later
+
+            # lowers the arm to drop the box
+            # publishes the values to lower the
+            # prismatic joint
+            joint_msg.name = ["joint_2"]
+            joint_msg.position = [3]
+            self.desired_joint_state_pub.publish(joint_msg)
+            while not self.at_desired_pos([data.data[0], joint_msg.position[0], data.data[1], data.data[2]]):
+                pass
+
+            # TODO: logic to release the block refer to gpiozero library
+            # releasing the grabber to drop the box
+
+            # moves the arm back to a set position
+            # set by the variable home_config
+            # publishes the values to move the arm to home_config position
             joint_msg.name = ["joint_1", "joint_3", "joint_4"]
             joint_msg.position = self.home_config
             self.desired_joint_state_pub.publish(joint_msg)
             while not self.at_desired_pos([self.home_config[0], 0, self.home_config[1], self.home_config[2]]):
                 pass
-
+            
+            # when the arm is back at home_config
+            # publish a boolean msg to tell the computer vision
+            # node to start looking for the box again
             bool_msg = Bool()
             bool_msg.data = True
             scara_home_pub.publish(bool_msg)
+
         self.rate.sleep()
 
     def at_desired_pos(self, desired_pos):
