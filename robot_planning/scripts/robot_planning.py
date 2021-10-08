@@ -99,6 +99,15 @@ class RobotTrajectory():
 
             # TODO: logic to release the block refer to gpiozero library
             # releasing the grabber to drop the box
+            
+            # raises the arm up the prismatic joint
+            # to get back into home configuration
+            # publishes the value to raise the arm
+            joint_msg.name = ["joint_2"]
+            joint_msg.position = [-3]
+            self.desired_joint_state_pub.publish(joint_msg)
+            while not self.at_desired_pos([data.data[0], joint_msg.position[0], data.data[1], data.data[2]]):
+                pass
 
             # moves the arm back to a set position
             # set by the variable home_config
@@ -136,4 +145,3 @@ if __name__ == '__main__':
             rt.run()
         except rospy.ROSInterruptionException:
             pass
-
