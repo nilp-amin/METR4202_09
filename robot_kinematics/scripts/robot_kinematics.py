@@ -31,6 +31,8 @@ class ComputeIk():
 
         #TODO: CHANGE THESE TO ACTUAL VALUES
         #Link Lengths
+        self.l1 = 126.412e-3
+        self.l2 = 67.5e-3
         self.l1 = 20
         self.l2 = 20
 
@@ -42,30 +44,52 @@ class ComputeIk():
         
         self.robot_ready = False 
 
+        #degrees
+        self.rotation_limit = 114;
+
     #TODO: REMOVE THIS
     def publish_test_values(self):
         T = Transform()
-        T.translation.x = 0
-        T.translation.y = 0
-        T.translation.z = 0.611
-        T.rotation.x = 43
-        T.rotation.y = 34
+        T.translation.x = 0.1
+        T.translation.y = 0.1
+        T.translation.z = 0.1
+        T.rotation.x = 0
+        T.rotation.y = 0
         T.rotation.z = 43
-        T.rotation.w = 2
+        T.rotation.w = 10
         ft = FiducialTransform()
         ft.transform = T
         self.pub_test_blocktransform.publish(ft)
     
+    def meets_rotation_limit(self,angle):
+        angle = angle * (180/pi)
+        if(angle > 0):
+            if(angle > self.rotation_limit):
+                return False
+        if(angle < 0):
+            if(angle < -self.rotation_limit):
+                return False
+        return True
+
+    def choose_optimal_angle(self, angles):
+         if(self.meets_rotation_limit(angles[0])):
+                if(self.meets_rotation_limit(angles[1])):
+                    return [angles[0], angles[1]]
+         if(self.meets_rotation_limit(angles[2])):
+                if(self.meets_rotation_limit(angles[3])):
+                    return [angles[2], angles[3]]
+
+
     #TODO: CHANGE TO ACTUAL VALUES
     def find_placement_angles(self, block_id):
         if(block_id == self.block_id1):
-            return [90,90,90]
+            return [-103.16, 15.162, 90]
         if(block_id == self.block_id2):
-            return[90,90,90]
+            return[-156.29918175, 15.16290002, 90]
         if(block_id == self.block_id3):
-            return[90,90,90]
+            return[-193.1690794, 15.16290002, 90]
         if(block_id == self.block_id4):
-            return[90,90,90]
+            return[-193.1690794, 15.16290002,90]
         
         #ERROR
         return[0,0,0]
@@ -81,10 +105,13 @@ class ComputeIk():
 
         #theta2: Second Link Rotation
         costheta2 = (p_x**2 + p_y**2 - l1**2 - l2**2) / (2*l1*l2)
-        theta2 = atan2(costheta2, sqrt(1 - costheta2**2 ))
-        theta2 = atan2(costheta2, -sqrt(1 - costheta2**2 ))
-        # theta1: First Link Rotation
-        theta1 = atan2(p_x,p_y) - atan2(l1 + l2*cos(theta2), l2*sin(theta2))
+        theta2_1 = atan2(costheta2, sqrt(1 - costheta2**2 ))
+        theta2_2 = atan2(costheta2, -sqrt(1 - costheta2**2 ))
+        #theta1: First Link Rotation
+        theta1_1 = atan2(p_x,p_y) - atan2(l1 + l2*cos(theta2_1), l2*sin(theta2_1))
+        theta1_2 = atan2(p_x,p_y) - atan2(l1 + l2*cos(theta2_2), l2*sin(theta2_2))
+        
+        theta1,theta2 = self.choose_optimal_angle([theta1_1,theta2_1, theta1_2, theta2_2])
 
         #theta3: Rotation of End Effector
         explicit_quat = [r.x, r.y, r.z, r.w]
@@ -102,7 +129,7 @@ class ComputeIk():
     #Continuously being checked
     def transform_callback(self, ft):
         if self.robot_ready:
-            rospy.sleep(3)
+            rospy.sleep(2)
             p = ft.transform.translation
             q = ft.transform.rotation
             block_id = ft.fiducial_id
