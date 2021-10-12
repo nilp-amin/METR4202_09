@@ -33,8 +33,8 @@ class ComputeIk():
         #Link Lengths
         self.l1 = 126.412e-3
         self.l2 = 67.5e-3
-        self.l1 = 20
-        self.l2 = 20
+        #self.l1 = 20
+        #self.l2 = 20
 
         #TODO: CHANGE BLOCK ID OPTIONS TO ACTUAL IDS
         self.block_id1 = 1
@@ -45,7 +45,7 @@ class ComputeIk():
         self.robot_ready = False 
 
         #degrees
-        self.rotation_limit = 114;
+        self.rotation_limit = 114
 
     #TODO: REMOVE THIS
     def publish_test_values(self):
@@ -80,6 +80,8 @@ class ComputeIk():
                     return [angles[2], angles[3]]
 
 
+    # TODO: (nilp) make sure you convert everything back to radians
+    # use radians() and degrees() function instead of hard coding
     #TODO: CHANGE TO ACTUAL VALUES
     def find_placement_angles(self, block_id):
         if(block_id == self.block_id1):
@@ -139,8 +141,8 @@ class ComputeIk():
 
             msg = Float32MultiArray()
             msg.data = pickup_angles + placement_angles
-            self.pub_angles.publish(msg);
-            self.pub_move.publish(True);
+            self.pub_angles.publish(msg)
+            self.pub_move.publish(True)
 
     def run(self):
         rospy.sleep(3)
@@ -148,8 +150,11 @@ class ComputeIk():
 
 if __name__ == '__main__':
 
-    ik = ComputeIk()
-
-    ik.run()
+    try:
+        ik = ComputeIk()
+        ik.run()
+    except rospy.ROSInterruptException:
+        print("An error occurred running the IK node.")
+        pass
 
         
