@@ -1,0 +1,3 @@
+<launch>
+	<node name="scara_sim_cv" pkg="robot_vision" type="sim_robot_vision.py" output="screen"/>
+</launch>

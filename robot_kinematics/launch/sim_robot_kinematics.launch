@@ -1,0 +1,3 @@
+<launch>
+	<node name="sim_scara_ik" pkg="robot_kinematics" type="sim_robot_kinematics.py" output="screen"/>
+</launch>
