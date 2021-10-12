@@ -10,7 +10,7 @@ from std_msgs.msg import Float32MultiArray
 
 class RobotTrajectory():
     def __init__(self):
-        rospy.init_node("scara_trajectory", anonymous = True)
+        rospy.init_node("scara_trajectory", anonymous=True)
         self.desired_joint_state_pub = rospy.Publisher("/desired_joint_states", JointState, queue_size=10)
         self.scara_home_pub = rospy.Publisher("/scara_home", Bool, queue_size = 10)
         self.angle_sub = rospy.Subscriber("/scara_angles", Float32MultiArray, self.callback_angle)
