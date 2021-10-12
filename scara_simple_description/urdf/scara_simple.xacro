@@ -782,7 +782,7 @@
   <parent link="prismatic_rod_1"/>
   <child link="prismatic_link_interface_1"/>
   <axis xyz="-0.0 0.0 1.0"/>
-  <limit effort="100" lower="0.0" upper="0.064" velocity="100"/>
+  <limit effort="100" lower="-0.04" upper="0" velocity="100"/>
 </joint>
 
 <joint name="Rigid61" type="fixed">
@@ -844,7 +844,7 @@
   <parent link="linear_motion_rail_1_1"/>
   <child link="side_connection_2_1"/>
   <axis xyz="-0.0 1.0 0.0"/>
-  <limit effort="100" lower="0.0" upper="0.0" velocity="100"/>
+  <limit effort="100" lower="-0.01" upper="0.0" velocity="100"/>
 </joint>
 
 <joint name="Slider107" type="prismatic">
@@ -852,7 +852,7 @@
   <parent link="linear_motion_rail_1_1"/>
   <child link="side_connection_1_1"/>
   <axis xyz="-0.0 1.0 0.0"/>
-  <limit effort="100" lower="0.0" upper="0.0" velocity="100"/>
+  <limit effort="100" lower="0" upper="0.01" velocity="100"/>
 </joint>
 
 <joint name="Rev110" type="continuous">
