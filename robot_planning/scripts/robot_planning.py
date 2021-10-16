@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 import rospy
-import gpiozero
+# from gpiozero import Servo
+import numpy as np
 
 from std_msgs.msg import String
 from std_msgs.msg import Bool
@@ -22,6 +23,7 @@ class RobotTrajectory():
         self.home_config = [2, 2, 2]
         self.current_joint_pos = []
         self.at_des_pos = False
+        self.desired_pos = []
 
     # Setting an empty array as the current joint
     # position, array given by the servos
@@ -35,8 +37,10 @@ class RobotTrajectory():
     def callback_angle(self, data):
         bool_msg = Bool()
         bool_msg.data = False
-        scara_home_pub.publish(bool_msg)
+        self.scara_home_pub.publish(bool_msg)
             
+        self.desired_pos = [data.data[0], 0, data.data[1], data.data[2]]
+
         # gets the data from the /scara_angles topic
         # uses the first three values in the list of six
         # give each value respective joint names
@@ -115,12 +119,14 @@ class RobotTrajectory():
         # node to start looking for the box again
         bool_msg = Bool()
         bool_msg.data = True
-        scara_home_pub.publish(bool_msg)
+        self.scara_home_pub.publish(bool_msg)
+        
+        print("reached here")
 
         self.rate.sleep()
 
     def at_desired_pos(self, desired_pos):
-        to_move = np.array(desired_pos)
+        to_move = np.array([desired_pos.data[0],0,desired_pos.data[1],desired_pos[2]])
         current_pos = np.array(self.current_joint_pos)
         error = to_move - current_pos
         if error[0] < 0.01 and error[1] < 0.01 and error[2] < 0.01 and error[3] < 0.01:
@@ -128,7 +134,7 @@ class RobotTrajectory():
         return False
 
     def run(self):
-        rate.sleep(3)
+        self.rate.sleep()
         rospy.spin()
 
 if __name__ == '__main__':
