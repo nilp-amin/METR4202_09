@@ -18,9 +18,9 @@ class RobotVision():
         self.listner = tf.TransformListener()
         self.tf_msg = FiducialTransform()
         self.Tbase_cam = np.array([
-            [1, 0, 0, 0.16],
-            [0, 1, 0, 0.16],
-            [0, 0, 1, 0],
+            [0.423, 0.844, -0.327, 0.318],
+            [0.905, -0.408, 0.117, -0.0177],
+            [-0.0343, -0.346, -0.937, 0.536],
             [0, 0, 0, 1]
         ])
         self.SCARA_ARM_RADIUS = 1
@@ -120,10 +120,11 @@ class RobotVision():
         pass
 
     def find_block_transform(self):
-        for tf in self.fiducial_transforms:
-            fid_id = tf.fiducial_id
+        for _tf in self.fiducial_transforms:
+            fid_id = _tf.fiducial_id
             (trans, rot) = self.listner.lookupTransform("/0", f"/fiducial_{fid_id}", rospy.Time(0))
-            Rcam_block = self.rotation_matrix(rot)
+            euler_angles = tf.transformations.euler_from_quaternion(rot)
+            Rcam_block = self.rotation_matrix(euler_angles)
             Pcam_block = np.array([
                                     [trans[0]],
                                     [trans[1]],
