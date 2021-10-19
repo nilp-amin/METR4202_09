@@ -18,8 +18,8 @@ class ComputeIk():
 
     def __init__(self):
         rospy.init_node("scara_kinematics", anonymous=True)
-        self.pub_angles = rospy.Publisher("/scara_angles", Float32MultiArray, queue_size=10)
-        self.sub_bt = rospy.Subscriber("/block_transform", FiducialTransform, self.transform_callback)
+        self.pub_angles = rospy.Publisher("/scara_angles", Float32MultiArray, queue_size=1)
+        self.sub_bt = rospy.Subscriber("/block_transform", FiducialTransform, self.transform_callback, queue_size=1)
 
         #TODO: REMOVE THIS
         self.pub_test_blocktransform = rospy.Publisher("/block_transform", FiducialTransform, queue_size=10)
@@ -112,9 +112,7 @@ class ComputeIk():
         theta1,theta2 = self.choose_optimal_angle([theta1_1,theta2_1, theta1_2, theta2_2])
 
         #theta3: Rotation of End Effector
-        explicit_quat = [r.x, r.y, r.z, r.w]
-        euler_angles = tf.transformations.euler_from_quaternion(explicit_quat)
-        theta3 = euler_angles[2]# find angle about z
+        theta3 = r.z
         return [theta1, theta2, theta3]
     
 

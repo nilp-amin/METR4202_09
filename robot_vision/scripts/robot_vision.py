@@ -23,6 +23,7 @@ class RobotVision():
             [-0.0343, -0.346, -0.937, 0.536],
             [0, 0, 0, 1]
         ])
+        self.Tbase_fiducial = "" # TODO: Add base fiducial ID
         self.SCARA_ARM_RADIUS = 1
         self.fiducial_transforms = None
         self.ready_to_pickup = False
@@ -94,7 +95,7 @@ class RobotVision():
         curr_trans_y = curr_trans.transform.translation.y
         curr_trans_z = curr_trans.transform.translation.z
 
-        error = 0.5
+        error = 0.5 # TODO: Tune this error
 
         # Check if the rotation is the same between callbacks
         if (abs(curr_rot_x - prev_rot_x) < error) and \
@@ -109,7 +110,7 @@ class RobotVision():
            (abs(curr_trans_y - prev_trans_y) < error) and \
            (abs(curr_trans_z - prev_trans_z) < error):
            # Check if the same position has been recorded for the 
-           # last 10 callbacks
+           # last 2 callbacks
            print(self.same_pos_counter)
            if self.same_pos_counter != 1:
                self.same_pos_counter += 1
@@ -117,35 +118,41 @@ class RobotVision():
            return True
         else:
             return False
-        pass
 
     def find_block_transform(self):
         for _tf in self.fiducial_transforms:
             fid_id = _tf.fiducial_id
-            (trans, rot) = self.listner.lookupTransform("/0", f"/fiducial_{fid_id}", rospy.Time(0))
-            euler_angles = tf.transformations.euler_from_quaternion(rot)
-            Rcam_block = self.rotation_matrix(euler_angles)
-            Pcam_block = np.array([
-                                    [trans[0]],
-                                    [trans[1]],
-                                    [trans[2]]
-            ])
-            Tcam_block = np.block([
-                                    [Rcam_block , Pcam_block],
-                                    [0, 0, 0, 1]
-                                  ])
-            Tbase_block = self.Tbase_cam @ Tcam_block
-            block_posx = Tbase_block[0][-1]
-            block_posy = Tbase_block[1][-1]
-            # The height is always constant and does not affect choice of block
-            curr_dist = np.linalg.norm(np.array([block_posx, block_posy, 0]))
-            if curr_dist < self.SCARA_ARM_RADIUS:
-                return (fid_id, Tbase_block)
+            if not fid_id == self.Tbase_fiducial:
+                (trans, rot) = self.listner.lookupTransform(f"/fiducial_{self.Tbase_fiducial}", f"/fiducial_{fid_id}", rospy.Time(0))
+                block_posx = trans[0] 
+                block_posy = trans[1] 
+                # The height is always constant and does not affect choice of block
+                curr_dist = np.linalg.norm(np.array([block_posx, block_posy, 0]))
+                if curr_dist < self.SCARA_ARM_RADIUS:
+                    euler_angles = tf.transformations.euler_from_quaternion(rot)
+                    Rbase_block = self.rotation_matrix(euler_angles)
+                    Pbase_block = np.array([
+                                            [trans[0]],
+                                            [trans[1]],
+                                            [trans[2]]
+                    ])
+                    Tbase_block = np.block([
+                                            [Rbase_block , Pbase_block],
+                                            [0, 0, 0, 1]
+                    ])
+                    return (fid_id, Tbase_block)
         return (None, None)
 
     # This callback is given data of type Tfiduicial_camera
     def fiducial_callback(self, data):
-        if self.read_cv_data and len(data.transforms) != 0:
+        if self.read_cv_data and len(data.transforms) != 0: # TODO: make this > 1, because of base fiducial
+            # Remove base fiducial from data as this is not a valid
+            # block
+            for (i, _tf) in enumerate(data.transforms):
+                if _tf.fiducial_id == self.Tbase_fiducial:
+                    del data.transforms[i]
+
+            # Now, check remaining fiducials
             self.fiducial_transforms = data.transforms
             current_id = data.transforms[0].fiducial_id
             current_transform = data.transforms[0]
@@ -170,7 +177,7 @@ class RobotVision():
     def ready_callback(self, data):
         while data.data:
             try:
-                if data.data and self.ready_to_pickup:
+                if self.ready_to_pickup:
                     self.read_cv_data = False
                     if self.fiducial_transforms:
                         (fid_id, Tbase_block) = self.find_block_transform()
