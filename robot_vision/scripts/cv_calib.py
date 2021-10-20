@@ -42,7 +42,7 @@ class Calibration():
         print("no blocks found")
         if len(data.transforms) == 1:
             fid_id = data.transforms[0].fiducial_id
-            (trans, rot) = self.listner.lookupTransform(f"fiducial_{fid_id}", "/0", rospy.Time(0))
+            (trans, rot) = self.listner.lookupTransform(f"fiducial_{5}", f"/fiducial_{4}", rospy.Time(0))
             euler_angles = tf.transformations.euler_from_quaternion(rot)
             Rbase_cam = self.rotation_matrix(euler_angles)
             Pbase_cam = np.array([

@@ -23,7 +23,7 @@ class RobotVision():
             [-0.0343, -0.346, -0.937, 0.536],
             [0, 0, 0, 1]
         ])
-        self.Tbase_fiducial = "" # TODO: Add base fiducial ID
+        self.Tbase_fiducial = "5" # TODO: Add base fiducial ID
         self.SCARA_ARM_RADIUS = 1
         self.fiducial_transforms = None
         self.ready_to_pickup = False
@@ -122,7 +122,7 @@ class RobotVision():
     def find_block_transform(self):
         for _tf in self.fiducial_transforms:
             fid_id = _tf.fiducial_id
-            if not fid_id == self.Tbase_fiducial:
+            if fid_id != int(self.Tbase_fiducial):
                 (trans, rot) = self.listner.lookupTransform(f"/fiducial_{self.Tbase_fiducial}", f"/fiducial_{fid_id}", rospy.Time(0))
                 block_posx = trans[0] 
                 block_posy = trans[1] 
@@ -140,12 +140,13 @@ class RobotVision():
                                             [Rbase_block , Pbase_block],
                                             [0, 0, 0, 1]
                     ])
+                    print(fid_id)
                     return (fid_id, Tbase_block)
         return (None, None)
 
     # This callback is given data of type Tfiduicial_camera
     def fiducial_callback(self, data):
-        if self.read_cv_data and len(data.transforms) != 0: # TODO: make this > 1, because of base fiducial
+        if self.read_cv_data and len(data.transforms) > 1: # TODO: make this > 1, because of base fiducial
             # Remove base fiducial from data as this is not a valid
             # block
             for (i, _tf) in enumerate(data.transforms):
