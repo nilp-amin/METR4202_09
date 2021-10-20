@@ -21,18 +21,12 @@ class ComputeIk():
         self.pub_angles = rospy.Publisher("/scara_angles", Float32MultiArray, queue_size=1)
         self.sub_bt = rospy.Subscriber("/block_transform", FiducialTransform, self.transform_callback, queue_size=1)
 
-        #TODO: REMOVE THIS
-        self.pub_test_blocktransform = rospy.Publisher("/block_transform", FiducialTransform, queue_size=10)
-
         self.listener = tf.TransformListener()
         self.rate = rospy.Rate(1)
 
-        #TODO: CHANGE THESE TO ACTUAL VALUES
         #Link Lengths
         self.l1 = 126.412e-3
         self.l2 = 67.5e-3
-        #self.l1 = 20
-        #self.l2 = 20
 
         #TODO: CHANGE BLOCK ID OPTIONS TO ACTUAL IDS
         self.block_id1 = 1
@@ -43,20 +37,6 @@ class ComputeIk():
         #degrees
         self.rotation_limit = 114
 
-    #TODO: REMOVE THIS
-    def publish_test_values(self):
-        T = Transform()
-        T.translation.x = 0.1
-        T.translation.y = 0.1
-        T.translation.z = 0.1
-        T.rotation.x = 0
-        T.rotation.y = 0
-        T.rotation.z = 43
-        T.rotation.w = 10
-        ft = FiducialTransform()
-        ft.transform = T
-        self.pub_test_blocktransform.publish(ft)
-    
     def meets_rotation_limit(self,angle):
         angle = angle * (180/pi)
         if(angle > 0):
@@ -78,7 +58,6 @@ class ComputeIk():
 
     # TODO: (nilp) make sure you convert everything back to radians
     # use radians() and degrees() function instead of hard coding
-    #TODO: CHANGE TO ACTUAL VALUES
     def find_placement_angles(self, block_id):
         if(block_id == self.block_id1):
             return [-103.16*(pi/180), 15.162*(pi/180), 90*(pi/180)]
@@ -114,13 +93,6 @@ class ComputeIk():
         #theta3: Rotation of End Effector
         theta3 = r.z
         return [theta1, theta2, theta3]
-    
-
-    #TODO: REMOVE THIS
-    #Continuously being updated from subscriber
-    def ready_callback(self, msg):
-        self.robot_ready = msg.data
-        self.publish_test_values()
     
     #Continuously being checked
     def transform_callback(self, ft):
