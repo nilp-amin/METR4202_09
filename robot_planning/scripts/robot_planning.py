@@ -19,11 +19,12 @@ class RobotTrajectory():
         self.pitch = 8e-3
         self.G = 8.11
         self.prismatic_lower_dist = 30e-3
-        self.search_postion = [math.pi/2, 0, 0, 0] 
-        self.wait_time = 1 
+        self.search_postion = [0, 2, 0, 0] 
+        self.wait_time = 2
         self.prismatic_wait_time = 2
 
     def ik_joints_callback(self, joint_angles):
+        print("Publishing joint states.")
         pickup_theta_1 = joint_angles.data[0]
         # pickup_theta_2 = self.prismatic_lower_dist / (self.pitch * self.G) 
         pickup_theta_2 = -2 
@@ -44,7 +45,7 @@ class RobotTrajectory():
         joint_msg = JointState()
         joint_msg.name = ["joint_1", "joint_3", "joint_4"]
         joint_msg.position = [pickup_theta_1, pickup_theta_3, pickup_theta_4]
-        joint_msg.velocity = [2, 2, 2]
+        joint_msg.velocity = [1, 1, 1]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.wait_time)
 
@@ -69,16 +70,16 @@ class RobotTrajectory():
         # Move robot to drop off zone
         joint_msg.name = ["joint_1", "joint_3", "joint_4"]
         joint_msg.position = [dropoff_theta_1, dropoff_theta_3, dropoff_theta_4]
-        joint_msg.velocity = [2, 2, 2]
+        joint_msg.velocity = [1, 1, 1]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.wait_time)
 
         # TODO: Drop the block 
 
         # Move robot back to search position
-        joint_msg.name = ["joint_1", "joint_3", "joint_4"]
+        joint_msg.name = ["joint_1", "joint_2", "joint_3", "joint_4"]
         joint_msg.position = self.search_postion 
-        joint_msg.velocity = [2, 2, 2]
+        joint_msg.velocity = [1, 1, 1, 1]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.prismatic_wait_time)
 

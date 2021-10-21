@@ -91,8 +91,8 @@ class ComputeIk():
 
         #From lecture slides theta1->theta1 theta2->theta3
         #theta2: Second Link Rotation
-        costheta2 = (p_x**2 + p_y**2 - l1**2 - l2**2) / (2*l1*l2)
-        if (abs(costheta2) > 1): print("No solution could be found")
+        costheta3 = (p_x**2 + p_y**2 - l1**2 - l2**2) / (2*l1*l2)
+        if (abs(costheta3) > 1): print("No solution could be found")
 
         theta3_1 = atan2(sqrt(1 - costheta3**2 ), costheta3)
         theta3_2 = atan2(-sqrt(1 - costheta3**2 ), costheta3)
@@ -103,7 +103,7 @@ class ComputeIk():
         theta1,theta3 = self.choose_optimal_angle([theta1_1, theta3_1, theta1_2, theta3_2])
 
         #theta3: Rotation of End Effector
-        theta3 = r.z
+        theta4 = r.z
         return [theta1, -theta3, -theta4]
     
     #Continuously being checked
