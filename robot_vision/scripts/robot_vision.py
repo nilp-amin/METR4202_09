@@ -24,7 +24,7 @@ class RobotVision():
             [0, 0, 0, 1]
         ])
         self.Tbase_fiducial = "5" # TODO: Add base fiducial ID
-        self.SCARA_ARM_RADIUS = 1
+        self.SCARA_ARM_RADIUS = 220e-3 
         self.fiducial_transforms = None
         self.ready_to_pickup = False
         self.read_cv_data = True
