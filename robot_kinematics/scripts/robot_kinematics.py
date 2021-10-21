@@ -34,6 +34,17 @@ class ComputeIk():
         self.block_id3 = 3
         self.block_id4 = 4
 
+        #PLACEMENTS
+        #           1
+        #   2
+        #
+        #   3
+        #           4
+        self.dropoff1 = [radians(84.10157572), radians(-103.16), radians(90)]
+        self.dropoff2 = [radians(137.23167807), radians(74.83709998), radians(90)]
+        self.dropoff3 = [radians(-137.23167807), radians(-74.83709998), radians(90)]
+        self.dropoff4 = [radians(-84.10157572), radians(-74.83709998), radians(90)]
+
         #degrees
         self.rotation_limit = 114
 
@@ -56,18 +67,15 @@ class ComputeIk():
                     return [angles[2], angles[3]]
 
 
-    # TODO: (nilp) make sure you convert everything back to radians
-    # use radians() and degrees() function instead of hard coding
     def find_placement_angles(self, block_id):
         if(block_id == self.block_id1):
-            return [-103.16*(pi/180), 15.162*(pi/180), 90*(pi/180)]
+            return  self.dropoff1
         if(block_id == self.block_id2):
-            return [-156.299*(pi/180), 15.162*(pi/180), 90*(pi/180)]
+            return self.dropoff2
         if(block_id == self.block_id3):
-            return [166.831*(pi/180), 15.162*(pi/180), 90*(pi/180)]
+            return self.dropoff3
         if(block_id == self.block_id4):
-            return [113.70*(pi/180), 15.162*(pi/180), 90*(pi/180)]
-        
+            return self.dropoff4
         #ERROR
         return[0,0,0]
 
@@ -79,22 +87,24 @@ class ComputeIk():
         p_z = t.z
         l1 = self.l1
         l2 = self.l2
+        
 
+        #From lecture slides theta1->theta1 theta2->theta3
         #theta2: Second Link Rotation
         costheta2 = (p_x**2 + p_y**2 - l1**2 - l2**2) / (2*l1*l2)
         if (abs(costheta2) > 1): print("No solution could be found")
 
-        theta2_1 = atan2(sqrt(1 - costheta2**2 ), costheta2)
-        theta2_2 = atan2(costheta2, -sqrt(1 - costheta2**2 ))
+        theta3_1 = atan2(sqrt(1 - costheta3**2 ), costheta3)
+        theta3_2 = atan2(-sqrt(1 - costheta3**2 ), costheta3)
         #theta1: First Link Rotation
-        theta1_1 = atan2(p_y, p_x) - atan2(l2*sin(theta2_1), l1 + l2*cos(theta2_1))
-        theta1_2 = atan2(p_y,p_x) - atan2(l2*sin(theta2_2), l1 + l2*cos(theta2_2))
+        theta1_1 = atan2(p_y, p_x) - atan2(l2*sin(theta3_1), l1 + l2*cos(theta3_1))
+        theta1_2 = atan2(p_y,p_x) - atan2(l2*sin(theta3_2), l1 + l2*cos(theta3_2))
         
-        theta1,theta2 = self.choose_optimal_angle([theta1_1,theta2_1, theta1_2, theta2_2])
+        theta1,theta3 = self.choose_optimal_angle([theta1_1, theta3_1, theta1_2, theta3_2])
 
         #theta3: Rotation of End Effector
         theta3 = r.z
-        return [theta1, -theta2, -theta3]
+        return [theta1, -theta3, -theta4]
     
     #Continuously being checked
     def transform_callback(self, ft):
