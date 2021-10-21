@@ -25,8 +25,8 @@ class ComputeIk():
         self.rate = rospy.Rate(1)
 
         #Link Lengths
-        self.l1 = 126.412e-3
-        self.l2 = 67.5e-3
+        self.l1 = 125e-3
+        self.l2 = 93e-3
 
         #TODO: CHANGE BLOCK ID OPTIONS TO ACTUAL IDS
         self.block_id1 = 1
@@ -82,17 +82,19 @@ class ComputeIk():
 
         #theta2: Second Link Rotation
         costheta2 = (p_x**2 + p_y**2 - l1**2 - l2**2) / (2*l1*l2)
-        theta2_1 = atan2(costheta2, sqrt(1 - costheta2**2 ))
+        if (abs(costheta2) > 1): print("No solution could be found")
+
+        theta2_1 = atan2(sqrt(1 - costheta2**2 ), costheta2)
         theta2_2 = atan2(costheta2, -sqrt(1 - costheta2**2 ))
         #theta1: First Link Rotation
-        theta1_1 = atan2(p_x,p_y) - atan2(l1 + l2*cos(theta2_1), l2*sin(theta2_1))
-        theta1_2 = atan2(p_x,p_y) - atan2(l1 + l2*cos(theta2_2), l2*sin(theta2_2))
+        theta1_1 = atan2(p_y, p_x) - atan2(l2*sin(theta2_1), l1 + l2*cos(theta2_1))
+        theta1_2 = atan2(p_y,p_x) - atan2(l2*sin(theta2_2), l1 + l2*cos(theta2_2))
         
         theta1,theta2 = self.choose_optimal_angle([theta1_1,theta2_1, theta1_2, theta2_2])
 
         #theta3: Rotation of End Effector
         theta3 = r.z
-        return [theta1, theta2, theta3]
+        return [theta1, -theta2, -theta3]
     
     #Continuously being checked
     def transform_callback(self, ft):
@@ -106,8 +108,8 @@ class ComputeIk():
 
         msg = Float32MultiArray()
         msg.data = pickup_angles + placement_angles
+        print(msg.data)
         self.pub_angles.publish(msg)
-        self.pub_move.publish(True)
 
     def run(self):
         rospy.sleep(3)

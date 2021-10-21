@@ -26,7 +26,7 @@ class RobotTrajectory():
     def ik_joints_callback(self, joint_angles):
         pickup_theta_1 = joint_angles.data[0]
         # pickup_theta_2 = self.prismatic_lower_dist / (self.pitch * self.G) 
-        pickup_theta_2 = 2 
+        pickup_theta_2 = -2 
         pickup_theta_3 = joint_angles.data[1]
         pickup_theta_4 = joint_angles.data[2]
 
@@ -48,6 +48,7 @@ class RobotTrajectory():
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.wait_time)
 
+        """
         # Now lower the gripper onto the block
         joint_msg.name = ["joint_2"]
         joint_msg.position = [pickup_theta_2]
@@ -63,6 +64,7 @@ class RobotTrajectory():
         joint_msg.velocity = [2]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.wait_time)
+        """
 
         # Move robot to drop off zone
         joint_msg.name = ["joint_1", "joint_3", "joint_4"]
