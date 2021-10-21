@@ -89,7 +89,6 @@ class RobotTrajectory():
         pass
 
     def run(self):
-        rospy.sleep(3)
         rospy.spin()
 
 
