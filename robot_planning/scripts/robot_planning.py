@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import rospy
-import gpiozero
+import RPi.GPIO as GPIO
 import math
 
 from std_msgs.msg import Bool
@@ -16,6 +16,13 @@ class RobotTrajectory():
         self.joint_sub = rospy.Subscriber("/scara_angles", Float32MultiArray, self.ik_joints_callback, queue_size=1)
         self.rate = rospy.Rate(0.25)
 
+        servoPIN = 12
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(servoPIN, GPIO.OUT)
+        p = GPIO.PWM(servoPIN, 50) # GPIO 17 for PWM with 50Hz
+        p.start(5) # Initialization
+
+        self.pick_up_block = False
         self.pitch = 8e-3
         self.G = 8.11
         self.prismatic_lower_dist = 30e-3
@@ -48,6 +55,7 @@ class RobotTrajectory():
         joint_msg.velocity = [1, 1, 1]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.wait_time)
+        self.pick_up_block = True
 
         """
         # Now lower the gripper onto the block
@@ -56,9 +64,18 @@ class RobotTrajectory():
         joint_msg.velocity = [2]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.prismatic_wait_time)
-
-        # TODO: Grab the block
-
+        """
+        try:
+            if self.pick_up_block == True:
+                val = 5
+                p.ChangeDutyCycle(val)
+                print(val)
+                time.sleep(2)
+                self.pick_up_block = False
+        except KeyboardInterrupt:
+            p.stop()
+            GPIO.cleanup()
+        """
         # Move gripper above collision zone
         joint_msg.name = ["joint_2"]
         joint_msg.position = [dropoff_theta_2]
@@ -73,9 +90,19 @@ class RobotTrajectory():
         joint_msg.velocity = [1, 1, 1]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.wait_time)
+        self.pick_up_block = True;
 
-        # TODO: Drop the block 
-
+        try:
+            if self.pick_up_block = True:
+                val = 6.5
+                p.ChangeDutyCycle(val)
+                print(val)
+                time.sleep(2)
+                self.pick_up_block =
+        except KeyboardInterrupt:
+            p.stop()
+            GPIO.cleanup()
+        
         # Move robot back to search position
         joint_msg.name = ["joint_1", "joint_2", "joint_3", "joint_4"]
         joint_msg.position = self.search_postion 
