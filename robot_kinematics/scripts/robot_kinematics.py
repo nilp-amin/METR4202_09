@@ -40,10 +40,10 @@ class ComputeIk():
         #
         #   3
         #           4
-        self.dropoff1 = [radians(84.10157572), radians(-103.16), radians(90)]
-        self.dropoff2 = [radians(137.23167807), radians(74.83709998), radians(90)]
-        self.dropoff3 = [radians(-137.23167807), radians(-74.83709998), radians(90)]
-        self.dropoff4 = [radians(-84.10157572), radians(-74.83709998), radians(90)]
+        self.dropoff1 = [1.467, -1.306, radians(90)]
+        self.dropoff2 = [2.395, -1.306, radians(90)]
+        self.dropoff3 = [-2.395, 1.306, radians(90)]
+        self.dropoff4 = [-1.467, 1.306, radians(90)]
 
         #degrees
         self.rotation_limit = 114

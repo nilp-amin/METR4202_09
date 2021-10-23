@@ -80,7 +80,6 @@ class ColorDetector:
         The closest distance color to the test color is the color returned.
         Black and white are also added to this color detection
         """
-        print(bgr)
         hsv = ColorDetector.bgr2hsv(bgr)
         coord_test = ColorDetector.hsv2coord(hsv)
         coord_r = ColorDetector.hsv2coord(self.hsv_r)
@@ -155,10 +154,27 @@ class RobotColorDetect():
                 print(f"trying again: {i}")
             else:
                 break
-        
-        bgr = self.get_bgr(vertices_0[0] - 6, vertices_0[1]).astype(np.uint8)
-        colour = ["red", "green", "blue", "yellow", "white", "black"][self.detector.detect_color(bgr)]
-        print(colour)
+        # Look at each of the vertices
+        vertices = [vertices_0, vertices_1, vertices_2, vertices_3]
+        patch_offsets = [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+        red_count = 0
+        green_count = 0
+        blue_count = 0
+        yellow_count = 0
+        for vertex in vertices:
+            for offset_x in patch_offsets:
+                for offset_y in patch_offsets:
+                    bgr = self.get_bgr(vertex[0] + offset_x, vertex[1] + offset_y).astype(np.uint8)
+                    colour = ["red", "green", "blue", "yellow", "white", "black"][self.detector.detect_color(bgr)]
+                    if colour == "red":
+                        red_count += 1
+                    elif colour == "green":
+                        green_count += 1
+                    elif colour == "blue":
+                        blue_count += 1
+                    elif colour == "yellow":
+                        yellow_count += 1
+        print(red_count, green_count, blue_count, yellow_count)
         pass
 
     # Obtains rgb data of all camera pixels
@@ -176,9 +192,9 @@ class RobotColorDetect():
 if __name__ == "__main__":
     try:
         # Read the colors.config file from each line and set the color arrays
-        current_dir = os.getcwd()
+        current_dir = r"/home/metr4202/catkin_ws/src/METR4202_09/robot_vision/scripts"
         try:
-            file = open(current_dir + "/colors.config", 'r')
+            file = open(current_dir + r"/colors.config", 'r')
             i = 0
             for line in file:
                 entries = line.split(' ')
