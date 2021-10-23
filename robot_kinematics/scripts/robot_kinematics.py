@@ -29,7 +29,7 @@ class ComputeIk():
         self.l2 = 93e-3
 
         #TODO: CHANGE BLOCK ID OPTIONS TO ACTUAL IDS
-        self.block_id1 = 1
+        self.block_id1 = 0 # 1
         self.block_id2 = 2
         self.block_id3 = 3
         self.block_id4 = 4
@@ -59,12 +59,14 @@ class ComputeIk():
         return True
 
     def choose_optimal_angle(self, angles):
-         if(self.meets_rotation_limit(angles[0])):
+        if(self.meets_rotation_limit(angles[0])):
                 if(self.meets_rotation_limit(angles[1])):
                     return [angles[0], angles[1]]
-         if(self.meets_rotation_limit(angles[2])):
+        if(self.meets_rotation_limit(angles[2])):
                 if(self.meets_rotation_limit(angles[3])):
                     return [angles[2], angles[3]]
+         
+        return [angles[0], angles[1]]
 
 
     def find_placement_angles(self, block_id):
@@ -88,7 +90,6 @@ class ComputeIk():
         l1 = self.l1
         l2 = self.l2
         
-
         #From lecture slides theta1->theta1 theta2->theta3
         #theta2: Second Link Rotation
         costheta3 = (p_x**2 + p_y**2 - l1**2 - l2**2) / (2*l1*l2)
@@ -104,7 +105,11 @@ class ComputeIk():
 
         #theta3: Rotation of End Effector
         theta4 = r.z
-        return [theta1, -theta3, -theta4]
+        theta4 = theta4 - theta3 - theta1
+        theta4 = theta4 % radians(90)
+
+        thetaarray = [theta1, -theta3, -theta4]
+        return thetaarray
     
     #Continuously being checked
     def transform_callback(self, ft):

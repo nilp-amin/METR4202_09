@@ -28,7 +28,7 @@ class RobotTrajectory():
         self.G = 8.11
         self.prismatic_lower_dist = 30e-3
         self.search_postion = [0, 2, 0, 0] 
-        self.wait_time = 3
+        self.wait_time = 4
         self.prismatic_wait_time = 3
 
     def ik_joints_callback(self, joint_angles):

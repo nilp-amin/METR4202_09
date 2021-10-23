@@ -1,0 +1,11 @@
+<launch>
+    <include file="$(find dynamixel_interface)/launch/dynamixel_interface_controller.launch"/>
+    <include file="$(find ximea_ros_cam)/launch/example_cam.launch"/>
+    <include file="$(find aruco_detect)/launch/aruco_detect.launch">
+        <arg name="fiducial_len" value="0.022"/>
+        <arg name="dictionary" value="3"/>
+    </include>
+    <node name="scara_cv" pkg="robot_vision" type="robot_vision.py" output="screen"/>
+    <node name="scara_kinematics" pkg="robot_kinematics" type="robot_kinematics.py" output="screen"/>
+	<node name="scara_trajectory" pkg="robot_planning" type="robot_planning.py" output="screen"/>
+</launch>
