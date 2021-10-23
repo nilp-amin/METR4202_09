@@ -28,7 +28,7 @@ class RobotVision():
         self.fiducial_transforms = None
         self.ready_to_pickup = False
         self.read_cv_data = True
-        self.rate = rospy.Rate(0.5)
+        self.rate = rospy.Rate(2)
 
         self.prev_transform = None
         self.prev_fid_id = None
@@ -95,7 +95,7 @@ class RobotVision():
         curr_trans_y = curr_trans.transform.translation.y
         curr_trans_z = curr_trans.transform.translation.z
 
-        error = 0.5 # TODO: Tune this error
+        error = 2 # TODO: Tune this error --> 0.5
 
         # Check if the rotation is the same between callbacks
         if (abs(curr_rot_x - prev_rot_x) < error) and \
@@ -160,6 +160,7 @@ class RobotVision():
 
             # Check if prev fiducial id is still in frame
             if current_id != self.prev_fid_id:
+                print("--------", current_id, self.prev_fid_id)
                 self.ready_to_pickup = False
                 self.prev_fid_id = current_id
                 self.prev_transform = current_transform
@@ -191,9 +192,9 @@ class RobotVision():
                         self.block_transform_pub.publish(self.tf_msg)
                         self.tf_msg = FiducialTransform()
                     self.read_cv_data = True
-                    return
+                    break
                 else:
-                    #print("Computer vision is still waiting for robot to move to home position.")
+                    print("Computer vision is still waiting for robot to move to home position.")
                     pass
             except Exception:
                 print(Exception)

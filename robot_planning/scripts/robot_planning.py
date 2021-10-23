@@ -2,6 +2,7 @@
 
 import rospy
 import RPi.GPIO as GPIO
+import math
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
@@ -13,21 +14,21 @@ class RobotTrajectory():
         self.desired_joint_state_pub = rospy.Publisher("/desired_joint_states", JointState, queue_size=1)
         self.scara_home_pub = rospy.Publisher("/scara_home", Bool, queue_size = 1)
         self.joint_sub = rospy.Subscriber("/scara_angles", Float32MultiArray, self.ik_joints_callback, queue_size=1)
-        self.rate = rospy.Rate(0.25)
+        self.rate = rospy.Rate(2)
 
         # Setup gripper
-        servoPIN = 12
-        self.drop_gripper_pos = 5
-        self.grab_gripper_pos = 6.5
+        servoPIN = 17
+        self.drop_gripper_pos = 6.5
+        self.grab_gripper_pos = 3
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(servoPIN, GPIO.OUT)
-        self.gripper = GPIO.PWM(servoPIN, 50) # GPIO 12 for PWM with 50Hz
+        self.gripper = GPIO.PWM(servoPIN, 50) # GPIO 17 for PWM with 50Hz
         self.gripper.start(self.drop_gripper_pos) # Initialization
 
         self.pitch = 8e-3
         self.G = 8.11
         self.prismatic_lower_dist = 30e-3
-        self.search_postion = [0, 2, 0, 0] 
+        self.search_postion = [math.pi/2, 0, 0] 
         self.wait_time = 4
         self.prismatic_wait_time = 3
 
@@ -44,7 +45,7 @@ class RobotTrajectory():
         dropoff_theta_3 = joint_angles.data[4]
         dropoff_theta_4 = joint_angles.data[5]
 
-        # First publish that the robot is at search position 
+        # First publish that the robot is moving to target
         scara_home_msg = Bool()
         scara_home_msg.data = False 
         self.scara_home_pub.publish(scara_home_msg)
@@ -67,7 +68,7 @@ class RobotTrajectory():
         rospy.sleep(self.prismatic_wait_time)
         """
 
-        #self.gripper.ChangeDutyCycle(self.grab_gripper_pos)
+        self.gripper.ChangeDutyCycle(self.grab_gripper_pos)
 
         """
         # Move gripper above collision zone
@@ -75,7 +76,7 @@ class RobotTrajectory():
         joint_msg.position = [dropoff_theta_2]
         joint_msg.velocity = [2]
         self.desired_joint_state_pub.publish(joint_msg)
-        rospy.sleep(self.wait_time)
+        rospy.sleep(self.prismatic_wait_time)
         """
 
         # Move robot to drop off zone
@@ -86,12 +87,12 @@ class RobotTrajectory():
         print("Moving to drop off zone")
         rospy.sleep(self.wait_time)
 
-        #self.gripper.ChangeDutyCycle(self.drop_gripper_pos)
+        self.gripper.ChangeDutyCycle(self.drop_gripper_pos)
         
         # Move robot back to search position
-        joint_msg.name = ["joint_1", "joint_2", "joint_3", "joint_4"]
+        joint_msg.name = ["joint_1", "joint_3", "joint_4"]
         joint_msg.position = self.search_postion 
-        joint_msg.velocity = [1, 1, 1, 1]
+        joint_msg.velocity = [1, 1, 1]
         self.desired_joint_state_pub.publish(joint_msg)
         print("Moving to search position")
         rospy.sleep(self.prismatic_wait_time)
@@ -102,9 +103,14 @@ class RobotTrajectory():
         pass
 
     def run(self):
-        rospy.sleep(3)
+        rospy.sleep(10)
         at_home = Bool()
         at_home.data = True
+        joint_msg = JointState()
+        joint_msg.name = ["joint_1", "joint_3", "joint_4"]
+        joint_msg.position = [math.pi/2, 0, 0]
+        joint_msg.velocity = [1, 1, 1]
+        self.desired_joint_state_pub.publish(joint_msg)
         self.scara_home_pub.publish(at_home)
         rospy.spin()
 
