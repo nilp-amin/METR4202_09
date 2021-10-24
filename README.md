@@ -89,13 +89,23 @@ URDF direction contains all the required urdf files (.xacro, .gazebo, .trans).
 Launch:
 - scara.launch -> The master launch file, launching all the launch files in the packages and runs all the python scripts.
 
-# Launch Tutorial
+# Installation Tutorial
 
-To launch the files, first make sure to be in the catkin workspace,
+First make sure to be in a catkin workspace then run the following lines:
+
+`git clone --recursive git@github.com:Nilp-amin/METR4202_09.git`
+
+`--recursive` allows git to clone the submodules.
+
+Now, build the workspace,
 
 `catkin build`
 
 `source devel/setup.bash`
+
+# Launch Tutorial
+
+To launch the files, first make sure to be in the catkin workspace,
 
 `roslaunch master_launch scara_home.launch`
 
