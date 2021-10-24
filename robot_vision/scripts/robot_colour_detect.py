@@ -103,7 +103,7 @@ class RobotColorDetect():
     def __init__(self, detector):
         rospy.init_node("colour_dectect", anonymous=True)
         self.colour_pub = rospy.Publisher("/block_colour", String, queue_size=1)
-        self.fiducial_id_sub = rospy.Subscriber("/investigate_id", Int32, self.fiducial_id_callback, queue_size=1)
+        self.fiducial_id_sub = rospy.Subscriber("/id", Int32, self.fiducial_id_callback, queue_size=1)
         self.image_sub = rospy.Subscriber("/ximea_cam/image_raw", Image, self.image_callback, queue_size=1)
         self.fiducial_verticies_sub = rospy.Subscriber("/fiducial_vertices", FiducialArray, self.vertices_callback, queue_size=1)
         

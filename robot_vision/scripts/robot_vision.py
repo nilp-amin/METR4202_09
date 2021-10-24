@@ -95,7 +95,7 @@ class RobotVision():
         curr_trans_y = curr_trans.transform.translation.y
         curr_trans_z = curr_trans.transform.translation.z
 
-        error = 2 # TODO: Tune this error --> 0.5
+        error = 0.5 # TODO: Tune this error --> 0.5
 
         # Check if the rotation is the same between callbacks
         if (abs(curr_rot_x - prev_rot_x) < error) and \
@@ -128,7 +128,7 @@ class RobotVision():
                 block_posy = trans[1] 
                 # The height is always constant and does not affect choice of block
                 curr_dist = np.linalg.norm(np.array([block_posx, block_posy, 0]))
-                if curr_dist < self.SCARA_ARM_RADIUS:
+                if curr_dist < self.SCARA_ARM_RADIUS: # Tune this to not have internal collisions
                     euler_angles = tf.transformations.euler_from_quaternion(rot)
                     Rbase_block = self.rotation_matrix(euler_angles)
                     Pbase_block = np.array([
@@ -147,8 +147,8 @@ class RobotVision():
     # This callback is given data of type Tfiduicial_camera
     def fiducial_callback(self, data):
         if self.read_cv_data and len(data.transforms) > 1: # TODO: make this > 1, because of base fiducial
-            # Remove base fiducial from data as this is not a valid
-            # block
+            # Remove base fiducial from data 
+            # as this is not a valid block
             for (i, _tf) in enumerate(data.transforms):
                 if _tf.fiducial_id == self.Tbase_fiducial:
                     del data.transforms[i]
@@ -160,7 +160,7 @@ class RobotVision():
 
             # Check if prev fiducial id is still in frame
             if current_id != self.prev_fid_id:
-                print("--------", current_id, self.prev_fid_id)
+                # print("--------", current_id, self.prev_fid_id)
                 self.ready_to_pickup = False
                 self.prev_fid_id = current_id
                 self.prev_transform = current_transform

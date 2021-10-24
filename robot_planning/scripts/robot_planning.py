@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 
 import rospy
-import RPi.GPIO as GPIO
 import math
+import pigpio
+import os
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float32MultiArray
+
 
 class RobotTrajectory():
     def __init__(self):
@@ -17,31 +19,30 @@ class RobotTrajectory():
         self.rate = rospy.Rate(2)
 
         # Setup gripper
-        servoPIN = 17
-        self.drop_gripper_pos = 6.5
-        self.grab_gripper_pos = 3
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(servoPIN, GPIO.OUT)
-        self.gripper = GPIO.PWM(servoPIN, 50) # GPIO 17 for PWM with 50Hz
-        self.gripper.start(self.drop_gripper_pos) # Initialization
+        os.system("sudo pigpiod")
+        rospy.sleep(1)
+        self.gripper_pin = 17
+        self.drop_gripper_pos = 1400
+        self.grab_gripper_pos = 700
+        self.gripper = pigpio.pi()
 
         self.pitch = 8e-3
         self.G = 8.11
         self.prismatic_lower_dist = 30e-3
-        self.search_postion = [math.pi/2, 0, 0] 
-        self.wait_time = 4
+        self.search_postion = [math.pi/2, 2.6, 0, 0] 
+        self.wait_time = 5
         self.prismatic_wait_time = 3
 
     def ik_joints_callback(self, joint_angles):
         print("Publishing joint states.")
         pickup_theta_1 = joint_angles.data[0]
         # pickup_theta_2 = self.prismatic_lower_dist / (self.pitch * self.G) 
-        pickup_theta_2 = -1.2 
+        pickup_theta_2 = -2.6
         pickup_theta_3 = joint_angles.data[1]
         pickup_theta_4 = joint_angles.data[2]
 
         dropoff_theta_1 = joint_angles.data[3]
-        dropoff_theta_2 = 2.6
+        dropoff_theta_2 = self.search_postion[1]
         dropoff_theta_3 = joint_angles.data[4]
         dropoff_theta_4 = joint_angles.data[5]
 
@@ -59,25 +60,21 @@ class RobotTrajectory():
         print("Moving above block")
         rospy.sleep(self.wait_time)
 
-        """
         # Now lower the gripper onto the block
         joint_msg.name = ["joint_2"]
         joint_msg.position = [pickup_theta_2]
         joint_msg.velocity = [2]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.prismatic_wait_time)
-        """
 
-        self.gripper.ChangeDutyCycle(self.grab_gripper_pos)
+        self.gripper.set_servo_pulsewidth(self.gripper_pin, self.grab_gripper_pos)
 
-        """
         # Move gripper above collision zone
         joint_msg.name = ["joint_2"]
         joint_msg.position = [dropoff_theta_2]
         joint_msg.velocity = [2]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.prismatic_wait_time)
-        """
 
         # Move robot to drop off zone
         joint_msg.name = ["joint_1", "joint_3", "joint_4"]
@@ -87,12 +84,12 @@ class RobotTrajectory():
         print("Moving to drop off zone")
         rospy.sleep(self.wait_time)
 
-        self.gripper.ChangeDutyCycle(self.drop_gripper_pos)
+        self.gripper.set_servo_pulsewidth(self.gripper_pin, self.drop_gripper_pos)
         
         # Move robot back to search position
-        joint_msg.name = ["joint_1", "joint_3", "joint_4"]
+        joint_msg.name = ["joint_1", "joint_2", "joint_3", "joint_4"]
         joint_msg.position = self.search_postion 
-        joint_msg.velocity = [1, 1, 1]
+        joint_msg.velocity = [1, 1, 1, 1]
         self.desired_joint_state_pub.publish(joint_msg)
         print("Moving to search position")
         rospy.sleep(self.prismatic_wait_time)
@@ -107,9 +104,9 @@ class RobotTrajectory():
         at_home = Bool()
         at_home.data = True
         joint_msg = JointState()
-        joint_msg.name = ["joint_1", "joint_3", "joint_4"]
-        joint_msg.position = [math.pi/2, 0, 0]
-        joint_msg.velocity = [1, 1, 1]
+        joint_msg.name = ["joint_1", "joint_2", "joint_3", "joint_4"]
+        joint_msg.position = self.search_postion
+        joint_msg.velocity = [1, 1, 1, 1]
         self.desired_joint_state_pub.publish(joint_msg)
         self.scara_home_pub.publish(at_home)
         rospy.spin()
