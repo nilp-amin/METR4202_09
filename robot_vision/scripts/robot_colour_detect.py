@@ -99,6 +99,7 @@ class ColorDetector:
 
 
 class RobotColorDetect():
+    """Used to determine the colour of a desired block."""
     def __init__(self, detector):
         rospy.init_node("colour_dectect", anonymous=True)
         self.colour_pub = rospy.Publisher("/block_colour", String, queue_size=1)
@@ -115,6 +116,17 @@ class RobotColorDetect():
         pass
 
     def get_bgr(self, x, y):
+        """
+        Obtains the BGR value of a pixel at position x and y.
+        The x, y cooridinate frame is computer based.
+
+        Args:
+            x (int): x position of a pixel
+            y (int): y position of a pixel
+
+        Returns:
+            (np.array): The BGR value of desired pixel
+        """
         b = self.image_data[(self.width) * (y - 1) + x]
         g = self.image_data[(self.width) * (y - 1) + (x + 1)]
         r = self.image_data[(self.width) * (y - 1) + (x + 2)]
@@ -122,10 +134,22 @@ class RobotColorDetect():
         pass
 
     def run(self):
+        """
+        The initalising function of the node, publisher, and subscribers
+        """
         rospy.sleep(3)
         rospy.spin()
 
     def find_fiducial_vertices(self, id):
+        """
+        Finds the vertices of a desired fiducial marker.
+
+        Args:
+            (int): the desired fiducial marker id
+
+        Returns:
+            (tuple): The (x,y) positions of the fiducial marker as a tuple
+        """
         vertices_0 = []
         vertices_1 = []
         vertices_2 = []
@@ -145,6 +169,15 @@ class RobotColorDetect():
 
     # Obtains fiducial id to investigate
     def fiducial_id_callback(self, data):
+        """
+        Function that is called when data is published to /id.
+        It is used to obtain the colour of the desired fiducial
+        provided in data.
+
+        Args:
+            data (std_msgs/Int32): the desired fiduical id for which 
+                                   colour is to be determined for
+        """
         id = data.data
         for i in range(1, 10):
             vertices_0, vertices_1, vertices_2, vertices_3 = self.find_fiducial_vertices(id)
@@ -170,12 +203,25 @@ class RobotColorDetect():
 
     # Obtains rgb data of all camera pixels
     def image_callback(self, data):
+        """
+        Function that is called when data is published to /ximea_cam/image_raw.
+
+        Args:
+            data (sensor_msgs/Image): The raw image data of BGR format, 3 x 1024 x 2048 long
+        """
         self.image_data = data.data
         self.rate.sleep()
         pass
 
     # Obtains the verticies of visible fiducials
     def vertices_callback(self, data):
+        """
+        Function that is called when data is published to /fiduical_vertices.
+        Obtains the vertices of the visible fiducial markers.
+
+        Args:
+            data (fiducial_msgs/FiducialArray): the vertices of visible fiducial markers
+        """
         self.vertices_data = data.fiducials
         self.rate.sleep()
         pass

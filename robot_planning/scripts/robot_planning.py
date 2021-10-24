@@ -13,23 +13,6 @@ from std_msgs.msg import Float32MultiArray
 class RobotTrajectory():
     """
     A class to represent the movement of servos given specific joint angles
-
-    Atributes:
-        desired_joint_state_pub: publisher to /desired_joint_states topic
-        scara_home_pub: publisher to /scara_home topic
-        joint_sub: subscriber to /scara_angles topic
-        rate: rate for operation within rospy
-        gripper_pin: GPIO PWM pin for servo motor
-        drop_gripper_pos: height of prismatic joint (theta2) for dropping box
-        grab_gripper_pos: height of prismatic joint (theta2)
-        gripper: Initialise pigpio
-        search_postion: home configuration of robot
-        wait_time: time between operations
-        prismatic_wait_time: time between prismatic operation 
-    Methods:
-        ik_joints_callback(): callback for when angles are published to /scara_angles topic
-        run(): Initialises robot to home config and runs spin() with a small sleep before hand to account for any errors
-
     """    
     def __init__(self):
         """

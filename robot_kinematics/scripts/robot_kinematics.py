@@ -17,29 +17,6 @@ from fiducial_msgs.msg import FiducialTransform
 class ComputeIk():
     """
     A class to represent the calculation of angles from given transform
-
-    Atributes:
-        pub_angles: publisher to /scara_angles topic
-        sub_bt: subscriber to /block_transform topic
-        rate: rate for operation within rospy
-        l1: Link 1 length
-        l2: Link 2 length
-        block_id1: colour ID of block
-        block_id2: colour ID of block
-        block_id3: colour ID of block
-        block_id4: colour ID of block
-        dropoff1: Drop off location for zone 1
-        dropoff2: Drop off location for zone 2
-        dropoff3: Drop off location for zone 3
-        dropoff4: Drop off location for zone 4
-        rotation_limit: rotation limit of servos
-    Methods:
-        meets_rotation_limit(): Check if given angle is within the specified limits
-        chose_optimal_angle(): Picks optimal angles depending on limits
-        find_placement_angles(): Determines joint angles for desired zone
-        compute_ik(): Use inverse kinematics to calculate joint angles from translations and rotation of block
-        transform_callback(): callback for when angles are published to /block_transform topic
-        run(): Runs spin() with a small sleep before hand to account for any errors
     """    
     def __init__(self):
         """

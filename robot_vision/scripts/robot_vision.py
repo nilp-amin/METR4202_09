@@ -2,6 +2,7 @@
 
 import rospy
 import tf
+import time
 
 import numpy as np
 import modern_robotics as mr
@@ -12,37 +13,8 @@ from std_msgs.msg import Int32
 from fiducial_msgs.msg import FiducialTransform, FiducialTransformArray
 
 class RobotVision():
-    
     """
     A class to represent the detection of blocks using a camera
-
-    Attributes:
-        block_transform_pub: publisher to block_transform topic
-        find_colour_pub: publisher to id topic
-        scara_home_sub: subscriber to /scara_home topic
-        fid_transform_sub: subscriber to /fiducial_transform topic
-        colour_sub: subscriber to /block_colour topic
-        listner: TODO
-        tf_msg: FiducialTransorm() message init
-        rate: rate for operation within rospy
-        Tbase_fiducial: TODO
-        SCARA_ARM_RADIUS: TODO
-        fiducial_transforms: TODO
-        read_to_pickup: TODO
-        read_cv_data: TODO
-        prev_transform: TODO
-        prev_fid_id: 
-        same_pos_counter: TODO
-        colour: TODO
-        colour_map: TODO
-    Methods: 
-        run(): TODO
-        rotation_matrix(): TODO
-        update_tf_msg(): TODO
-        is_moving(): TODO
-        find_block_transform(): TODO 
-
-
     """
     def __init__(self):
         """
@@ -80,13 +52,14 @@ class RobotVision():
 
     def rotation_matrix(self, rotation)->np.array:
         """
-        TODO
+        Calculates the rotation matrix from provided x,y,z euler angles
+        in radians.
 
         Args:
-            rotation ([type]): [description]
+            rotation (list): the x,y,z euler angles
 
         Returns:
-            np.array: [description]
+            np.array: the rotation matrix of a given x,y,z euler angles
         """        
         # Rotation in radians
         theta_x = rotation[0]
@@ -112,11 +85,12 @@ class RobotVision():
 
     def update_tf_msg(self, fid_id, transform):
         """
-        TODO
+        Populates the FiducialTransform with the provided
+        transformation matix.
 
         Args:
-            fid_id (int): [description]
-            transform (geometry_msgs/Transform.msg): [description]
+            fid_id (int): the fiducials id
+            transform (np.array): the transformation matrix
         """        
         self.tf_msg.fiducial_id = fid_id
         (rot, p) = mr.TransToRp(transform)
@@ -131,10 +105,11 @@ class RobotVision():
 
     def is_moving(self, curr_trans):
         """
-        Checks if given current transorm differs enough from the previous transform to declare the block moving
+        Checks if given current transorm differs enough from the previous 
+        transform to declare the block moving
 
         Args:
-            curr_trans (geometry_msgs/Transform.msg): [description]TODO
+            curr_trans (geometry_msgs/Transform.msg): The most updated transform of desired block
 
         Returns:
             True (Bool): if block is moving
@@ -188,10 +163,12 @@ class RobotVision():
 
     def find_block_transform(self):
         """
-        TODO
+        Finds Tbase_block transformation matrix of a valid
+        block. The block is determined to be valid by calculating
+        if the robot is able to reach the block
 
         Returns:
-            (fid_id, Tbase_block): 
+            (fid_id, Tbase_block): the valid blocks fiduical id and Tbase_block transformation matrix
         """        
         for _tf in self.fiducial_transforms:
             fid_id = _tf.fiducial_id
@@ -219,20 +196,22 @@ class RobotVision():
 
     def colour_callback(self, data):
         """
-        Function that is called when data is published to /block_transform
+        Function that is called when data is published to /block_transform.
+        It obtains the colour of the desired block.
 
         Args:
-            data (String): [description]TODO
+            data (std_msgs/String): The colour of the desired block
         """        
         self.colour = data.data
 
     # This callback is given data of type Tfiduicial_camera
     def fiducial_callback(self, data):
         """
-        
+        Function that is called when data is published to /fiducial_transforms.
+        The data contains the transformations of visible fiducials.
 
         Args:
-            data (fiducial_msgs/FiducialTransformArray): [description]
+            data (fiducial_msgs/FiducialTransformArray): the visible fiducial transformations
         """        
         # Remove base fiducial from data 
         # as this is not a valid block
@@ -265,10 +244,11 @@ class RobotVision():
 
     def ready_callback(self, data):
         """
-        
+        Function that is called when data is published to /scara_home.
+        The data obtains the 
 
         Args:
-            data (Bool): [description]
+            data (Bool): if the robot is in the home configuration
         """        
         while data.data:
             try:
@@ -284,8 +264,10 @@ class RobotVision():
                         id_msg = Int32()
                         id_msg.data = int(fid_id)
                         self.find_colour_pub.publish(id_msg)
-                        while (not self.colour):
-                            # Wait till the colour node returns a colour
+                        timeout_start = time.time()
+                        timeout = 1
+                        while (not self.colour and time.time() < timeout_start + timeout):
+                            # Wait until the colour node returns a colour
                             pass
                         self.update_tf_msg(self.colour_map[self.colour], Tbase_block)
                         rospy.loginfo(self.tf_msg)
