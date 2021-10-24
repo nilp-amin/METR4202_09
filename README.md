@@ -1,5 +1,5 @@
 # METR4202-09
-METR4202 Team 09 ROS Code
+METR4202 Team 09 ROS Code (https://github.com/Nilp-amin/METR4202_09)
 
 This file contains the code library for a scara robot. This scara robot uses four Dynamixel AX-12A for the joints, with one of them used for the prismatic joint, and one SG90 servo for the gripping function at the end effector.
 
