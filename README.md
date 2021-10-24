@@ -106,23 +106,23 @@ vi controller_config.yaml
 Press I to insert into the file and add the following code after the first "joint":
 
 ```
-- id: 2
-  joint_name: joint_2
-  zero_pos: 512
-  min_pos: 0
-  max_pos: 1023
+      - id: 2
+        joint_name: joint_2
+        zero_pos: 512
+        min_pos: 0
+        max_pos: 1023
 
-- id: 2
-  joint_name: joint_3
-  zero_pos: 512
-  min_pos: 0
-  max_pos: 1023
-  
-- id: 2
-  joint_name: joint_4
-  zero_pos: 512
-  min_pos: 0
-  max_pos: 1023
+      - id: 2
+        joint_name: joint_3
+        zero_pos: 512
+        min_pos: 0
+        max_pos: 1023
+
+      - id: 2
+        joint_name: joint_4
+        zero_pos: 512
+        min_pos: 0
+        max_pos: 1023
   
 ```
 
