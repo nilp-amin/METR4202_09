@@ -17,6 +17,7 @@ Scripts:
     - /scara_home (std_msgs/Bool)
   - **Publishers**: /block_transform (fiducial_msgs/FiducialTransform)
 - sim_robot_vision.py -> Using ximea package to detect fiducials in simulation
+- colour_picker.py -> Detects the colour in rgb/hsv values
 
 Launch:
 - robot_planning.launch -> Launches "robot_vision.py" with the **Node name**: scara_cv.
@@ -140,6 +141,17 @@ Now, add the following code after the node line:
         <param name="serial_no"       type="string" value="12345678" />
 ```
 where 12345678 represents the serial no. off the camera.
+
+Now, go back out to the METR4202_09 directory:
+
+```
+cd robot_vision
+cd scripts
+python colour_picker.py
+```
+When a gui pops up, click on a colour button then click on the same colour on the camera vision side of the gui.
+
+Repeat this process for all four colours.
 
 Now to build the workspace, make sure to be in the catkin workspace
 
