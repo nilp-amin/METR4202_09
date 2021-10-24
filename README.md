@@ -5,9 +5,9 @@ This file contains the code library for a scara robot. This code will allow the 
 
 This code library contains all the required files: python scripts in each of the robot function packages, the launch files, ximea camera sub modules, fiducial sub modules, dynamixel interface sub modules, and the gazebo simulation files such as urdf files. The python scripts will have doc strings and comments on what each function does and what certain blocks of code do.
 
-# Packages
+# Robot Kinematics Package
 
-**robot_kinematics package**
+**Package Name: robot_kinematics**
 
 Scripts:
 - placement_angle_finder.py -> Script to find the angles the joints require for the robot to go to the specified zone.
@@ -19,4 +19,3 @@ Scripts:
 
 Launch:
 - sim_robot_kinematics.launch -> Launches "sim_robot_kinematics.py" with the **Node name**: sim_scara_ik.
-
