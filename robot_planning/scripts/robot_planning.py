@@ -83,6 +83,7 @@ class RobotTrajectory():
         joint_msg.position = [dropoff_theta_2]
         joint_msg.velocity = [2]
         self.desired_joint_state_pub.publish(joint_msg)
+        self.gripper.set_servo_pulsewidth(self.gripper_pin, self.grab_gripper_pos + 100)
         rospy.sleep(self.prismatic_wait_time)
 
         # Move robot to drop off zone
