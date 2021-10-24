@@ -93,21 +93,20 @@ Launch:
 
 First make sure to be in a catkin workspace then run the following lines:
 
-`git clone --recursive git@github.com:Nilp-amin/METR4202_09.git`
-
-`--recursive` allows git to clone the submodules.
+```git clone --recursive git@github.com:Nilp-amin/METR4202_09.git```
 
 Now, build the workspace,
 
-`catkin build`
-
-`source devel/setup.bash`
+```
+catkin build
+source devel/setup.bash
+```
 
 # Launch Tutorial
 
 To launch the files, first make sure to be in the catkin workspace,
 
-`roslaunch master_launch scara_home.launch`
+```roslaunch master_launch scara_home.launch```
 
 # Authors
 
