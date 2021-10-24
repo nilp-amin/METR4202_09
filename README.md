@@ -13,9 +13,33 @@ Scripts:
 - placement_angle_finder.py -> Script to find the angles the joints require for the robot to go to the specified zone.
 - robot_kinematics.py -> This script does all the inverse kinematics for the robot. 
   - **Node name**: scara_kinematics  
-  - **Subscribers**: /block_transform  
-  - **Publishers**: /scara_angles
+  - **Subscribers**: /block_transform (fiducial_msgs/FiducialTransform)  
+  - **Publishers**: /scara_angles (std_msgs/Float32MultiArray)
 - sim_robot_kinematics.py -> The inverse kinematics script for the simulation.
 
 Launch:
 - sim_robot_kinematics.launch -> Launches "sim_robot_kinematics.py" with the **Node name**: sim_scara_ik.
+
+# Robot Trajectory Planning Package
+
+**Package Name: robot_planning**
+
+Scripts:
+- robot_planning.py -> Script does the robot trajectory planning, publishing the inverse kinematics values and telling the robot which joint moves first and such.
+  - **Node name**: scara_trajectory 
+  - **Subscribers**: /scara_angles (std_msgs/Float32MultiArray), /joint_states (sensor_msgs/JointState)
+  - **Publishers**: /desired_joint_states (sensor_msgs/JointState), /scara_home (std_smgs/Bool)
+- sim_robot_planning.py -> rRobot trajectory planning for the simulation
+
+Launch:
+- robot_planning.launch -> Launches "robot_planning.py" with the **Node name**: scara_trajectory.
+- sim_robot_planning.launch -> Launches "sim_robot_planning.py" with the **Node name**: scara_trajectory.
+
+# Robot Vision Package
+
+**Package Name: robot_vision**
+
+
+
+
+
