@@ -87,10 +87,10 @@ cv2.setMouseCallback('palette', mouse_callback_palette, None)
 # Setup the XIMEA Camera
 cam = xiapi.Camera()
 cam.open_device()
-cam.set_exposure(10000)
+cam.set_exposure(7000)
 cam.set_imgdataformat('XI_RGB24')
-#cam.disable_auto_wb()
-cam.enable_auto_wb()
+cam.disable_auto_wb()
+#cam.enable_auto_wb()
 cam.start_acquisition()
 cam_img = xiapi.Image()
 

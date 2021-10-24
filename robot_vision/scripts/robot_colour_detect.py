@@ -21,7 +21,6 @@ from ximea import xiapi
 
 
 class ColorDetector:
-
     """
     Color detection class:
     Detects RGBY as well as White (W) and Black (K)
@@ -161,6 +160,7 @@ class RobotColorDetect():
         green_count = 0
         blue_count = 0
         yellow_count = 0
+        """
         for vertex in vertices:
             for offset_x in patch_offsets:
                 for offset_y in patch_offsets:
@@ -174,7 +174,15 @@ class RobotColorDetect():
                         blue_count += 1
                     elif colour == "yellow":
                         yellow_count += 1
-        print(red_count, green_count, blue_count, yellow_count)
+        """
+        colour = "black"
+        for vertex in vertices:
+            i = 0
+            while (colour == "black" or colour == "white"):
+                bgr = self.get_bgr(vertex[0], vertex[1] + i).astype(np.uint8)
+                colour = ["red", "green", "blue", "yellow", "white", "black"][self.detector.detect_color(bgr)]
+                i += 1
+        print(colour)
         pass
 
     # Obtains rgb data of all camera pixels

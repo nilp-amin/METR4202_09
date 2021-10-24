@@ -194,7 +194,7 @@ class RobotVision():
                     self.read_cv_data = True
                     break
                 else:
-                    print("Computer vision is still waiting for robot to move to home position.")
+                    #print("Computer vision is still waiting for robot to move to home position.")
                     pass
             except Exception:
                 print(Exception)
