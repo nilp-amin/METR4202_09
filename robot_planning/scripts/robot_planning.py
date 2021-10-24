@@ -19,8 +19,6 @@ class RobotTrajectory():
         self.rate = rospy.Rate(2)
 
         # Setup gripper
-        os.system("sudo pigpiod")
-        rospy.sleep(1)
         self.gripper_pin = 17
         self.drop_gripper_pos = 1400
         self.grab_gripper_pos = 700
