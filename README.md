@@ -125,10 +125,7 @@ Press I to insert into the file and add the following code after the `torque_lim
         max_pos: 1023
   
 ```
-
-
-
-Now, build the workspace,
+Now to build the workspace, make sure to be in the catkin workspace
 
 ```
 catkin build
