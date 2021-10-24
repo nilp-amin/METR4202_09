@@ -55,7 +55,7 @@ class RobotTrajectory():
         joint_msg = JointState()
         joint_msg.name = ["joint_1", "joint_3", "joint_4"]
         joint_msg.position = [pickup_theta_1, pickup_theta_3, pickup_theta_4]
-        joint_msg.velocity = [1, 1, 1]
+        joint_msg.velocity = [2, 2, 2]
         self.desired_joint_state_pub.publish(joint_msg)
         print("Moving above block")
         rospy.sleep(self.wait_time)
@@ -79,7 +79,7 @@ class RobotTrajectory():
         # Move robot to drop off zone
         joint_msg.name = ["joint_1", "joint_3", "joint_4"]
         joint_msg.position = [dropoff_theta_1, dropoff_theta_3, dropoff_theta_4]
-        joint_msg.velocity = [1, 1, 1]
+        joint_msg.velocity = [2, 2, 2]
         self.desired_joint_state_pub.publish(joint_msg)
         print("Moving to drop off zone")
         rospy.sleep(self.wait_time)
@@ -89,7 +89,7 @@ class RobotTrajectory():
         # Move robot back to search position
         joint_msg.name = ["joint_1", "joint_2", "joint_3", "joint_4"]
         joint_msg.position = self.search_postion 
-        joint_msg.velocity = [1, 1, 1, 1]
+        joint_msg.velocity = [2, 1, 2, 2]
         self.desired_joint_state_pub.publish(joint_msg)
         print("Moving to search position")
         rospy.sleep(self.prismatic_wait_time)
@@ -100,15 +100,12 @@ class RobotTrajectory():
         pass
 
     def run(self):
-        rospy.sleep(10)
-        at_home = Bool()
-        at_home.data = True
+        rospy.sleep(3)
         joint_msg = JointState()
         joint_msg.name = ["joint_1", "joint_2", "joint_3", "joint_4"]
         joint_msg.position = self.search_postion
-        joint_msg.velocity = [1, 1, 1, 1]
+        joint_msg.velocity = [2, 1, 2, 2]
         self.desired_joint_state_pub.publish(joint_msg)
-        self.scara_home_pub.publish(at_home)
         rospy.spin()
 
 

@@ -104,10 +104,8 @@ class ComputeIk():
         theta1,theta3 = self.choose_optimal_angle([theta1_1, theta3_1, theta1_2, theta3_2])
 
         #theta3: Rotation of End Effector
-        theta4 = r.z
-        theta4 = theta4 - theta3 - theta1
-        theta4 = theta4 % radians(90)
-
+        theta4 = (r.z - theta3 - theta1) % radians(90)
+        
         thetaarray = [theta1, -theta3, -theta4]
         return thetaarray
     
