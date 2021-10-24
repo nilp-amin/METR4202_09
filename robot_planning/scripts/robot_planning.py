@@ -62,7 +62,7 @@ class RobotTrajectory():
         scara_home_msg.data = False 
         self.scara_home_pub.publish(scara_home_msg)
 
-        # First moves directly above the block
+        # First move directly above the block
         joint_msg = JointState()
         joint_msg.name = ["joint_1", "joint_3", "joint_4"]
         joint_msg.position = [pickup_theta_1, pickup_theta_3, pickup_theta_4]
@@ -83,7 +83,6 @@ class RobotTrajectory():
         joint_msg.position = [dropoff_theta_2]
         joint_msg.velocity = [2]
         self.desired_joint_state_pub.publish(joint_msg)
-        self.gripper.set_servo_pulsewidth(self.gripper_pin, self.grab_gripper_pos + 100)
         rospy.sleep(self.prismatic_wait_time)
 
         # Move robot to drop off zone
