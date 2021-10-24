@@ -11,36 +11,64 @@ from std_msgs.msg import Float32MultiArray
 
 
 class RobotTrajectory():
+    """
+    A class to represent the movement of servos given specific joint angles
+
+    Atributes:
+        desired_joint_state_pub: publisher to /desired_joint_states topic
+        scara_home_pub: publisher to /scara_home topic
+        joint_sub: subscriber to /scara_angles topic
+        rate: rate for operation within rospy
+        gripper_pin: GPIO PWM pin for servo motor
+        drop_gripper_pos: height of prismatic joint (theta2) for dropping box
+        grab_gripper_pos: height of prismatic joint (theta2)
+        gripper: Initialise pigpio
+        search_postion: home configuration of robot
+        wait_time: time between operations
+        prismatic_wait_time: time between prismatic operation 
+    Methods:
+        ik_joints_callback(): callback for when angles are published to /scara_angles topic
+        run(): Initialises robot to home config and runs spin() with a small sleep before hand to account for any errors
+
+    """    
     def __init__(self):
+        """
+        Constructs all the necessary attributes for RobotTrajectory object
+        """        
         rospy.init_node("scara_trajectory", anonymous=True)
         self.desired_joint_state_pub = rospy.Publisher("/desired_joint_states", JointState, queue_size=1)
         self.scara_home_pub = rospy.Publisher("/scara_home", Bool, queue_size = 1)
         self.joint_sub = rospy.Subscriber("/scara_angles", Float32MultiArray, self.ik_joints_callback, queue_size=1)
         self.rate = rospy.Rate(2)
-
-        # Setup gripper
-        os.system("sudo pigpiod")
-        rospy.sleep(1)
+        
+        #Setup gripper
         self.gripper_pin = 17
         self.drop_gripper_pos = 1400
         self.grab_gripper_pos = 700
         self.gripper = pigpio.pi()
-
-        self.pitch = 8e-3
-        self.G = 8.11
-        self.prismatic_lower_dist = 30e-3
         self.search_postion = [math.pi/2, 2.6, 0, 0] 
         self.wait_time = 5
         self.prismatic_wait_time = 3
 
     def ik_joints_callback(self, joint_angles):
-        print("Publishing joint states.")
+        """
+        Function that is called when data is published to /scara_angles
+        Logic involved with trajectory planning and picking up and moving blocks
+        Publishes to joint angles to servos on robot /desired_joint_states
+        Publishes True when robot has returned to home configuration and is ready for more angles
+
+        Args:
+            joint_angles (std_msgs/Float32MultiArray): Array of 6 angles (theta1, theta3, theta4, theta1, theta3, theta4)
+                                                        where first three are joint angles for picking up block and last three for 
+                                                        placing block
+        """
+        # Extract pickup angles from message
         pickup_theta_1 = joint_angles.data[0]
-        # pickup_theta_2 = self.prismatic_lower_dist / (self.pitch * self.G) 
-        pickup_theta_2 = -2.6
+        pickup_theta_2 = -self.search_postion[1]
         pickup_theta_3 = joint_angles.data[1]
         pickup_theta_4 = joint_angles.data[2]
 
+        # Extract dropoff angles from message
         dropoff_theta_1 = joint_angles.data[3]
         dropoff_theta_2 = self.search_postion[1]
         dropoff_theta_3 = joint_angles.data[4]
@@ -51,13 +79,12 @@ class RobotTrajectory():
         scara_home_msg.data = False 
         self.scara_home_pub.publish(scara_home_msg)
 
-        # First we move directly above the block
+        # First moves directly above the block
         joint_msg = JointState()
         joint_msg.name = ["joint_1", "joint_3", "joint_4"]
         joint_msg.position = [pickup_theta_1, pickup_theta_3, pickup_theta_4]
         joint_msg.velocity = [2, 2, 2]
         self.desired_joint_state_pub.publish(joint_msg)
-        print("Moving above block")
         rospy.sleep(self.wait_time)
 
         # Now lower the gripper onto the block
@@ -66,7 +93,6 @@ class RobotTrajectory():
         joint_msg.velocity = [2]
         self.desired_joint_state_pub.publish(joint_msg)
         rospy.sleep(self.prismatic_wait_time)
-
         self.gripper.set_servo_pulsewidth(self.gripper_pin, self.grab_gripper_pos)
 
         # Move gripper above collision zone
@@ -81,9 +107,9 @@ class RobotTrajectory():
         joint_msg.position = [dropoff_theta_1, dropoff_theta_3, dropoff_theta_4]
         joint_msg.velocity = [2, 2, 2]
         self.desired_joint_state_pub.publish(joint_msg)
-        print("Moving to drop off zone")
         rospy.sleep(self.wait_time)
-
+        
+        #Drop off block
         self.gripper.set_servo_pulsewidth(self.gripper_pin, self.drop_gripper_pos)
         
         # Move robot back to search position
@@ -91,21 +117,25 @@ class RobotTrajectory():
         joint_msg.position = self.search_postion 
         joint_msg.velocity = [2, 1, 2, 2]
         self.desired_joint_state_pub.publish(joint_msg)
-        print("Moving to search position")
         rospy.sleep(self.prismatic_wait_time)
 
         # publish that the robot is in search position
         scara_home_msg.data = True
         self.scara_home_pub.publish(scara_home_msg)
-        pass
+        
 
     def run(self):
+        """
+        Initialises robot to home config and runs spin() with a small sleep before hand to account for any errors
+        """
+        #Initialise to home config
         rospy.sleep(3)
         joint_msg = JointState()
         joint_msg.name = ["joint_1", "joint_2", "joint_3", "joint_4"]
         joint_msg.position = self.search_postion
         joint_msg.velocity = [2, 1, 2, 2]
         self.desired_joint_state_pub.publish(joint_msg)
+        # Run
         rospy.spin()
 
 
@@ -116,3 +146,4 @@ if __name__ == "__main__":
     except rospy.ROSInterruptionException:
         print("An error occurred running the Planning node.")
         pass
+
