@@ -7,32 +7,34 @@ import numpy as np
 import modern_robotics as mr
 
 from std_msgs.msg import Bool
+from std_msgs.msg import String
+from std_msgs.msg import Int32
 from fiducial_msgs.msg import FiducialTransform, FiducialTransformArray
 
 class RobotVision():
     def __init__(self):
         rospy.init_node("scara_cv", anonymous=True)
         self.block_transform_pub = rospy.Publisher("block_transform", FiducialTransform, queue_size=1)
+        self.find_colour_pub = rospy.Publisher("id", Int32, queue_size=1)
         self.scara_home_sub = rospy.Subscriber("/scara_home", Bool, self.ready_callback, queue_size=1)
         self.fid_transform_sub = rospy.Subscriber("/fiducial_transforms", FiducialTransformArray, self.fiducial_callback, queue_size=1)
+        self.colour_sub = rospy.Subscriber("/block_colour", String, self.colour_callback, queue_size=1)
         self.listner = tf.TransformListener()
         self.tf_msg = FiducialTransform()
-        self.Tbase_cam = np.array([
-            [0.423, 0.844, -0.327, 0.318],
-            [0.905, -0.408, 0.117, -0.0177],
-            [-0.0343, -0.346, -0.937, 0.536],
-            [0, 0, 0, 1]
-        ])
-        self.Tbase_fiducial = "5" # TODO: Add base fiducial ID
+        self.rate = rospy.Rate(1)
+
+        self.Tbase_fiducial = "42"
         self.SCARA_ARM_RADIUS = 220e-3 
         self.fiducial_transforms = None
         self.ready_to_pickup = False
         self.read_cv_data = True
-        self.rate = rospy.Rate(2)
+
 
         self.prev_transform = None
         self.prev_fid_id = None
         self.same_pos_counter = 0
+        self.colour = None
+        self.colour_map = {"red": 0, "green": 1, "blue": 2, "yellow": 3}
         pass
 
     def run(self):
@@ -95,24 +97,25 @@ class RobotVision():
         curr_trans_y = curr_trans.transform.translation.y
         curr_trans_z = curr_trans.transform.translation.z
 
-        error = 0.5 # TODO: Tune this error --> 0.5
+        pos_error = 0.5 # TODO: Tune this error --> 0.5
+        rot_error = 0.5 # TODO: Tune this error
 
         # Check if the rotation is the same between callbacks
-        if (abs(curr_rot_x - prev_rot_x) < error) and \
-           (abs(curr_rot_y - prev_rot_y) < error) and \
-           (abs(curr_rot_z - prev_rot_z) < error):
+        if (abs(curr_rot_x - prev_rot_x) < rot_error) and \
+           (abs(curr_rot_y - prev_rot_y) < rot_error) and \
+           (abs(curr_rot_z - prev_rot_z) < rot_error):
            pass
         else:
             return False
         
         # Check if the translation is the same between callbacks
-        if (abs(curr_trans_x - prev_trans_x) < error) and \
-           (abs(curr_trans_y - prev_trans_y) < error) and \
-           (abs(curr_trans_z - prev_trans_z) < error):
+        if (abs(curr_trans_x - prev_trans_x) < pos_error) and \
+           (abs(curr_trans_y - prev_trans_y) < pos_error) and \
+           (abs(curr_trans_z - prev_trans_z) < pos_error):
            # Check if the same position has been recorded for the 
            # last 2 callbacks
            print(self.same_pos_counter)
-           if self.same_pos_counter != 1:
+           if self.same_pos_counter < 2:
                self.same_pos_counter += 1
                return False
            return True
@@ -144,23 +147,24 @@ class RobotVision():
                     return (fid_id, Tbase_block)
         return (None, None)
 
+    def colour_callback(self, data):
+        self.colour = data.data
+
     # This callback is given data of type Tfiduicial_camera
     def fiducial_callback(self, data):
-        if self.read_cv_data and len(data.transforms) > 1: # TODO: make this > 1, because of base fiducial
-            # Remove base fiducial from data 
-            # as this is not a valid block
-            for (i, _tf) in enumerate(data.transforms):
-                if _tf.fiducial_id == self.Tbase_fiducial:
-                    del data.transforms[i]
-
-            # Now, check remaining fiducials
+        # Remove base fiducial from data 
+        # as this is not a valid block
+        for (i, _tf) in enumerate(data.transforms):
+            if _tf.fiducial_id == self.Tbase_fiducial:
+                del data.transforms[i]
+        if self.read_cv_data and len(data.transforms) > 1:
+            # Now, check a visible fiducial
             self.fiducial_transforms = data.transforms
             current_id = data.transforms[0].fiducial_id
             current_transform = data.transforms[0]
 
             # Check if prev fiducial id is still in frame
             if current_id != self.prev_fid_id:
-                # print("--------", current_id, self.prev_fid_id)
                 self.ready_to_pickup = False
                 self.prev_fid_id = current_id
                 self.prev_transform = current_transform
@@ -175,6 +179,7 @@ class RobotVision():
             self.prev_fid_id = None
             self.same_pos_counter = 0
             self.fiducial_transforms = data.transforms
+        self.rate.sleep()
 
     def ready_callback(self, data):
         while data.data:
@@ -187,7 +192,14 @@ class RobotVision():
                             self.read_cv_data = True
                             print("All blocks found were out of reach")
                             continue
-                        self.update_tf_msg(fid_id, Tbase_block)
+                        print("obtaining colour of block id {fid_id}")
+                        id_msg = Int32()
+                        id_msg.data = int(fid_id)
+                        self.find_colour_pub.publish(id_msg)
+                        while (not self.colour):
+                            # Wait till the colour node returns a colour
+                            pass
+                        self.update_tf_msg(self.colour_map[self.colour], Tbase_block)
                         rospy.loginfo(self.tf_msg)
                         self.block_transform_pub.publish(self.tf_msg)
                         self.tf_msg = FiducialTransform()
@@ -201,7 +213,6 @@ class RobotVision():
                 pass
             pass
         pass
-
 
 
 if __name__ == "__main__":

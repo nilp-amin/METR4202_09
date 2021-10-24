@@ -155,26 +155,6 @@ class RobotColorDetect():
                 break
         # Look at each of the vertices
         vertices = [vertices_0, vertices_1, vertices_2, vertices_3]
-        patch_offsets = [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
-        red_count = 0
-        green_count = 0
-        blue_count = 0
-        yellow_count = 0
-        """
-        for vertex in vertices:
-            for offset_x in patch_offsets:
-                for offset_y in patch_offsets:
-                    bgr = self.get_bgr(vertex[0] + offset_x, vertex[1] + offset_y).astype(np.uint8)
-                    colour = ["red", "green", "blue", "yellow", "white", "black"][self.detector.detect_color(bgr)]
-                    if colour == "red":
-                        red_count += 1
-                    elif colour == "green":
-                        green_count += 1
-                    elif colour == "blue":
-                        blue_count += 1
-                    elif colour == "yellow":
-                        yellow_count += 1
-        """
         colour = "black"
         for vertex in vertices:
             i = 0
@@ -182,6 +162,9 @@ class RobotColorDetect():
                 bgr = self.get_bgr(vertex[0], vertex[1] + i).astype(np.uint8)
                 colour = ["red", "green", "blue", "yellow", "white", "black"][self.detector.detect_color(bgr)]
                 i += 1
+        colour_msg = String()
+        colour_msg.data = colour
+        self.colour_pub.publish(colour_msg)
         print(colour)
         pass
 

@@ -40,8 +40,8 @@ class RobotTrajectory():
         self.scara_home_pub = rospy.Publisher("/scara_home", Bool, queue_size = 1)
         self.joint_sub = rospy.Subscriber("/scara_angles", Float32MultiArray, self.ik_joints_callback, queue_size=1)
         self.rate = rospy.Rate(2)
-        
-        #Setup gripper
+
+        # Setup gripper
         self.gripper_pin = 17
         self.drop_gripper_pos = 1400
         self.grab_gripper_pos = 700
