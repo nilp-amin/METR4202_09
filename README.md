@@ -149,7 +149,7 @@ cd robot_vision
 cd scripts
 python colour_picker.py
 ```
-When a gui pops up, click on a colour button then click on the same colour on the camera vision side of the gui.
+When a gui pops up, click on a colour button then click on the same coloured block on the camera vision side of the gui then click save.
 
 Repeat this process for all four colours.
 
