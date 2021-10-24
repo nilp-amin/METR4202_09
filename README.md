@@ -72,9 +72,16 @@ Launch:
 - display.launch -> launches the urdf.rviz
 - gazebo.launch -> launches the gazebo
 
-Meshes directory contains all the 
+Meshes directory contains all the stl files for the gazebo simuation.
 
+URDF direction contains all the required urdf files (.xacro, .gazebo, .trans).
 
+# Master Package
+
+**Package Name: master_launch**
+
+Launch:
+- scara.launch -> The master launch file, launching all the launch files in the packages and runs all the python scripts.
 
 
 
