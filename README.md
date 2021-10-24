@@ -29,15 +29,50 @@ Scripts:
   - **Node name**: scara_trajectory 
   - **Subscribers**: /scara_angles (std_msgs/Float32MultiArray), /joint_states (sensor_msgs/JointState)
   - **Publishers**: /desired_joint_states (sensor_msgs/JointState), /scara_home (std_smgs/Bool)
-- sim_robot_planning.py -> rRobot trajectory planning for the simulation
+- sim_robot_planning.py -> Robot trajectory planning for the simulation
 
 Launch:
 - robot_planning.launch -> Launches "robot_planning.py" with the **Node name**: scara_trajectory.
 - sim_robot_planning.launch -> Launches "sim_robot_planning.py" with the **Node name**: scara_trajectory.
 
+Referenced Code:
+- End effector movement: https://abyz.me.uk/rpi/pigpio/python.html
+
+Submodules:
+- dynamixel_interface
+
 # Robot Vision Package
 
 **Package Name: robot_vision**
+
+Scripts:
+- robot_vision.py -> Using ximea package to detect fiducials in sight
+  - **Node name**: scara_cv
+  - **Subscribers**: /fiducial_transforms (fiducial_msgs/FiducialTransform), /scara_home (std_msgs/Bool)
+  - **Publishers**: /block_transform (fiducial_msgs/FiducialTransform)
+- sim_robot_vision.py -> Using ximea package to detect fiducials in simulation
+
+Launch:
+- robot_planning.launch -> Launches "robot_vision.py" with the **Node name**: scara_cv.
+- sim_robot_planning.launch -> Launches "sim_robot_vision.py" with the **Node name**: scara_sim_cv.
+
+Referenced Code:
+- ximea package: https://github.com/wavelab/ximea_ros_cam.git
+
+Submodules:
+- ximea_ros_cam
+- fiducial
+
+# Robot Description Package
+
+**Package Name: scara_simple_description**
+
+Launch:
+- controller.launch -> launches controller.yaml
+- display.launch -> launches the urdf.rviz
+- gazebo.launch -> launches the gazebo
+
+Meshes directory contains all the 
 
 
 
