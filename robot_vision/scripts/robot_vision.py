@@ -12,7 +12,42 @@ from std_msgs.msg import Int32
 from fiducial_msgs.msg import FiducialTransform, FiducialTransformArray
 
 class RobotVision():
+    
+    """
+    A class to represent the detection of blocks using a camera
+
+    Attributes:
+        block_transform_pub: publisher to block_transform topic
+        find_colour_pub: publisher to id topic
+        scara_home_sub: subscriber to /scara_home topic
+        fid_transform_sub: subscriber to /fiducial_transform topic
+        colour_sub: subscriber to /block_colour topic
+        listner: TODO
+        tf_msg: FiducialTransorm() message init
+        rate: rate for operation within rospy
+        Tbase_fiducial: TODO
+        SCARA_ARM_RADIUS: TODO
+        fiducial_transforms: TODO
+        read_to_pickup: TODO
+        read_cv_data: TODO
+        prev_transform: TODO
+        prev_fid_id: 
+        same_pos_counter: TODO
+        colour: TODO
+        colour_map: TODO
+    Methods: 
+        run(): TODO
+        rotation_matrix(): TODO
+        update_tf_msg(): TODO
+        is_moving(): TODO
+        find_block_transform(): TODO 
+
+
+    """
     def __init__(self):
+        """
+        Constructs all the necessary attributes for ComputeIk object
+        """    
         rospy.init_node("scara_cv", anonymous=True)
         self.block_transform_pub = rospy.Publisher("block_transform", FiducialTransform, queue_size=1)
         self.find_colour_pub = rospy.Publisher("id", Int32, queue_size=1)
@@ -29,7 +64,6 @@ class RobotVision():
         self.ready_to_pickup = False
         self.read_cv_data = True
 
-
         self.prev_transform = None
         self.prev_fid_id = None
         self.same_pos_counter = 0
@@ -38,10 +72,22 @@ class RobotVision():
         pass
 
     def run(self):
+        """
+        Runs spin() with a small sleep before hand to account for any errors
+        """        
         rospy.sleep(3)
         rospy.spin()
 
     def rotation_matrix(self, rotation)->np.array:
+        """
+        TODO
+
+        Args:
+            rotation ([type]): [description]
+
+        Returns:
+            np.array: [description]
+        """        
         # Rotation in radians
         theta_x = rotation[0]
         theta_y = rotation[1]
@@ -65,6 +111,13 @@ class RobotVision():
         return rz @ ry @ rx
 
     def update_tf_msg(self, fid_id, transform):
+        """
+        TODO
+
+        Args:
+            fid_id (int): [description]
+            transform (geometry_msgs/Transform.msg): [description]
+        """        
         self.tf_msg.fiducial_id = fid_id
         (rot, p) = mr.TransToRp(transform)
         self.tf_msg.transform.translation.x = p[0]
@@ -77,10 +130,21 @@ class RobotVision():
         self.tf_msg.transform.rotation.z = rotation_vec[2]
 
     def is_moving(self, curr_trans):
+        """
+        Checks if given current transorm differs enough from the previous transform to declare the block moving
+
+        Args:
+            curr_trans (geometry_msgs/Transform.msg): [description]TODO
+
+        Returns:
+            True (Bool): if block is moving
+            False (Bool): if block is not moving
+        """        
         # Check if this is the first callback to occur
         if not self.prev_fid_id or not self.prev_transform:
             return False
 
+        # Extract data from message type
         prev_rot_x = self.prev_transform.transform.rotation.x
         prev_rot_y = self.prev_transform.transform.rotation.y
         prev_rot_z = self.prev_transform.transform.rotation.z
@@ -123,6 +187,12 @@ class RobotVision():
             return False
 
     def find_block_transform(self):
+        """
+        TODO
+
+        Returns:
+            (fid_id, Tbase_block): 
+        """        
         for _tf in self.fiducial_transforms:
             fid_id = _tf.fiducial_id
             if fid_id != int(self.Tbase_fiducial):
@@ -148,10 +218,22 @@ class RobotVision():
         return (None, None)
 
     def colour_callback(self, data):
+        """
+        Function that is called when data is published to /block_transform
+
+        Args:
+            data (String): [description]TODO
+        """        
         self.colour = data.data
 
     # This callback is given data of type Tfiduicial_camera
     def fiducial_callback(self, data):
+        """
+        
+
+        Args:
+            data (fiducial_msgs/FiducialTransformArray): [description]
+        """        
         # Remove base fiducial from data 
         # as this is not a valid block
         for (i, _tf) in enumerate(data.transforms):
@@ -182,6 +264,12 @@ class RobotVision():
         self.rate.sleep()
 
     def ready_callback(self, data):
+        """
+        
+
+        Args:
+            data (Bool): [description]
+        """        
         while data.data:
             try:
                 if self.ready_to_pickup:
@@ -221,3 +309,4 @@ if __name__ == "__main__":
         rv.run()
     except rospy.ROSInterruptException:
         print("An error occured running the Robot vision node.")
+
