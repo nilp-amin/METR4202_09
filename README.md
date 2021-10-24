@@ -91,7 +91,11 @@ Launch:
 
 # Launch Tutorial
 
-To launch the files, the following code needs to be executed
+To launch the files, first make sure to be in the catkin workspace,
+
+`catkin build`
+
+`source devel/setup.bash`
 
 `roslaunch master_launch scara_home.launch`
 
