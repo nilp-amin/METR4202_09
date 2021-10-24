@@ -168,6 +168,9 @@ To launch the files, first make sure to be in the catkin workspace,
 
 ```
 roslaunch master_launch scara_home.launch
+```
+Open a new terminal and run:
+```
 rostopic pub --once /scara_home std_msgs/Bool "data: true"
 ```
 
