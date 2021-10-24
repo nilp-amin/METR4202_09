@@ -83,5 +83,7 @@ URDF direction contains all the required urdf files (.xacro, .gazebo, .trans).
 Launch:
 - scara.launch -> The master launch file, launching all the launch files in the packages and runs all the python scripts.
 
+# Launch Tutorial
 
+>roslaunch master_launch scara_home.launch
 
