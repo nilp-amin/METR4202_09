@@ -56,6 +56,19 @@ class ComputeIk():
         self.l1 = 125e-3
         self.l2 = 93e-3
 
+        # ID CONVERSION
+        # Red =  0
+        # Green = 1
+        # Blue = 2
+        # Yellow = 3
+
+        #PLACEMENTS
+        #           1
+        #   2
+        #
+        #   3
+        #           4
+
         #Assign block ID locations
         # Compare values to 
         # Each number equals a specific colour
@@ -64,13 +77,6 @@ class ComputeIk():
         self.block_id2 = 1 # Location 2 drop off point
         self.block_id3 = 2 # Location 3 drop off point
         self.block_id4 = 3 # Locaiton 4 drop off point
-
-        #PLACEMENTS
-        #           1
-        #   2
-        #
-        #   3
-        #           4
         self.dropoff1 = [1.467, -1.306, radians(90)]
         self.dropoff2 = [2.395, -1.306, radians(90)]
         self.dropoff3 = [-2.395, 1.306, radians(90)]
