@@ -162,6 +162,20 @@ catkin build
 source devel/setup.bash
 ```
 
+# Simulation Tutorial
+
+To launch the URDF files for a simulation, make sure to be in the catkin workspace and do the following:
+
+```
+roslaunch scara_simple_description gazebo.launch
+```
+
+Open a new terminal and run:
+
+```
+roslaunch scara_simple_description controller.launch
+```
+
 # Launch Tutorial
 
 To launch the files, first make sure to be in the catkin workspace,
