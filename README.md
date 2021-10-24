@@ -137,9 +137,9 @@ vim example_cam.launch
 Now, add the following code after the node line:
 
 ```
-<param name="serial_no" >
+        <param name="serial_no"       type="string" value="12345678" />
 ```
-
+where 12345678 represents the serial no. off the camera.
 
 Now to build the workspace, make sure to be in the catkin workspace
 
