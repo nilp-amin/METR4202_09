@@ -17,7 +17,8 @@ Scripts:
     - /scara_home (std_msgs/Bool)
   - **Publishers**: /block_transform (fiducial_msgs/FiducialTransform)
 - sim_robot_vision.py -> Using ximea package to detect fiducials in simulation
-- colour_picker.py -> Detects the colour in rgb/hsv values
+- colour_picker.py -> Detects the colour in rgb/hsv values (referenced code)
+- robot_colour_detect.py -> Also detects the colour (referenced code)
 
 Launch:
 - robot_planning.launch -> Launches "robot_vision.py" with the **Node name**: scara_cv.
@@ -25,6 +26,7 @@ Launch:
 
 Referenced Code:
 - ximea package: https://github.com/wavelab/ximea_ros_cam.git
+- robot_colour_detect.py, colour_picker.py: Miguel Valencia (https://github.com/uqmvale6/metr4202_color)
 
 Submodules:
 - ximea_ros_cam
@@ -164,7 +166,10 @@ source devel/setup.bash
 
 To launch the files, first make sure to be in the catkin workspace,
 
-```roslaunch master_launch scara_home.launch```
+```
+roslaunch master_launch scara_home.launch
+rostopic pub --once /scara_home std_msgs/Bool "data: true"
+```
 
 # Authors
 
