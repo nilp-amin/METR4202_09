@@ -103,7 +103,7 @@ cd config
 vi controller_config.yaml
 ```
 
-Press I to insert into the file and add the following code after the first "joint":
+Press I to insert into the file and add the following code after the `torque_limit: 1.0`:
 
 ```
       - id: 2
@@ -112,13 +112,13 @@ Press I to insert into the file and add the following code after the first "join
         min_pos: 0
         max_pos: 1023
 
-      - id: 2
+      - id: 3
         joint_name: joint_3
         zero_pos: 512
         min_pos: 0
         max_pos: 1023
 
-      - id: 2
+      - id: 4
         joint_name: joint_4
         zero_pos: 512
         min_pos: 0
