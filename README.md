@@ -5,6 +5,30 @@ This file contains the code library for a scara robot. This scara robot uses fou
 
 This code library contains all the required files: python scripts in each of the robot function packages, the launch files, ximea camera sub modules, fiducial sub modules, dynamixel interface sub modules, and the gazebo simulation files such as urdf files. The python scripts will have doc strings and comments on what each function does and what certain blocks of code do.
 
+# Robot Vision Package
+
+**Package Name: robot_vision**
+
+Scripts:
+- robot_vision.py -> Using ximea package to detect fiducials in sight
+  - **Node name**: scara_cv
+  - **Subscribers**: 
+    - /fiducial_transforms (fiducial_msgs/FiducialTransform)
+    - /scara_home (std_msgs/Bool)
+  - **Publishers**: /block_transform (fiducial_msgs/FiducialTransform)
+- sim_robot_vision.py -> Using ximea package to detect fiducials in simulation
+
+Launch:
+- robot_planning.launch -> Launches "robot_vision.py" with the **Node name**: scara_cv.
+- sim_robot_planning.launch -> Launches "sim_robot_vision.py" with the **Node name**: scara_sim_cv.
+
+Referenced Code:
+- ximea package: https://github.com/wavelab/ximea_ros_cam.git
+
+Submodules:
+- ximea_ros_cam
+- fiducial
+
 # Robot Kinematics Package
 
 **Package Name: robot_kinematics**
@@ -45,30 +69,6 @@ Referenced Code:
 Submodules:
 - dynamixel_interface
 
-# Robot Vision Package
-
-**Package Name: robot_vision**
-
-Scripts:
-- robot_vision.py -> Using ximea package to detect fiducials in sight
-  - **Node name**: scara_cv
-  - **Subscribers**: 
-    - /fiducial_transforms (fiducial_msgs/FiducialTransform)
-    - /scara_home (std_msgs/Bool)
-  - **Publishers**: /block_transform (fiducial_msgs/FiducialTransform)
-- sim_robot_vision.py -> Using ximea package to detect fiducials in simulation
-
-Launch:
-- robot_planning.launch -> Launches "robot_vision.py" with the **Node name**: scara_cv.
-- sim_robot_planning.launch -> Launches "sim_robot_vision.py" with the **Node name**: scara_sim_cv.
-
-Referenced Code:
-- ximea package: https://github.com/wavelab/ximea_ros_cam.git
-
-Submodules:
-- ximea_ros_cam
-- fiducial
-
 # Robot Description Package
 
 **Package Name: scara_simple_description**
@@ -95,3 +95,14 @@ To launch the files, the following code needs to be executed
 
 `roslaunch master_launch scara_home.launch`
 
+# Authors
+
+Nilp Amin - 45811645
+
+Ethan McDonnell - 45825530
+
+Harry Meyers - 45317512
+
+Justin Kim - 45890220
+
+Lachlan Best - 45823424
