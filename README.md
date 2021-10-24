@@ -123,8 +123,24 @@ Press I to insert into the file and add the following code after the `torque_lim
         zero_pos: 512
         min_pos: 0
         max_pos: 1023
-  
 ```
+
+Now, access the example_cam.launch in the ximea_ros_cam submodule directory:
+
+First make sure to be in the METR4202_09 directory.
+
+```
+cd ximea_ros_cam
+cd launch
+vim example_cam.launch
+```
+Now, add the following code after the node line:
+
+```
+<param name="serial_no" >
+```
+
+
 Now to build the workspace, make sure to be in the catkin workspace
 
 ```
