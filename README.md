@@ -85,5 +85,7 @@ Launch:
 
 # Launch Tutorial
 
->roslaunch master_launch scara_home.launch
+To launch the files, the following code needs to be executed
+
+`roslaunch master_launch scara_home.launch`
 
